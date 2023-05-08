@@ -1,5 +1,6 @@
 import { Counter, CurrencyIcon} from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './BurgerIngredient.module.css';
+import PropTypes from "prop-types";
 
 const BurgerIngredient = (props) =>  {
     const {ingredient} = props;
@@ -12,12 +13,16 @@ const BurgerIngredient = (props) =>  {
         <div className={`${styles.content} ml-4 mb-10 mr-6`}>
             <img className={`${styles.illustration} pl-4 pr-4 pb-1`} src={ingredient.image} alt="" />
             <div className={styles.price_content}>
-                <p className='pr-2'>{ingredient.price}</p>
-                <CurrencyIcon type="primary"/>
+                <p className={`text text_type_digits-default pr-2`}>{ingredient.price}</p>
+                <CurrencyIcon className={`${styles.icon}`}/>
             </div>
-            <p>{ingredient.name}</p>
+            <p className={`pt-1`}>{ingredient.name}</p>
         </div>
     </div>
     )
 }
 export default BurgerIngredient;
+
+BurgerIngredient.propTypes = {
+    ingredient: PropTypes.array.isRequired,
+}

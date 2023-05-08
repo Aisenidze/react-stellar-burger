@@ -2,6 +2,7 @@ import { CurrencyIcon, LockIcon, DragIcon, ConstructorElement } from "@ya.prakti
 import Modal from "../../Modal/Modal";
 import { useState } from "react";
 import ModalDetails from "../../ModalDetails/ModalDetails";
+import PropTypes from "prop-types";
 
 const BurgerMain = (props) => {
   const { ingredients, indexof, ingredientlength } = props;
@@ -26,3 +27,9 @@ const BurgerMain = (props) => {
 }
 
 export default BurgerMain;
+
+BurgerMain.propTypes = {
+  ingredients: PropTypes.array.isRequired,
+  indexof: PropTypes.array.isRequired,
+  ingredientlength: PropTypes.array.isRequired,
+}

@@ -1,6 +1,7 @@
 .item {
   display: flex;
   justify-content: flex-start;
+  text-align: center;
   position: relative;
   max-width: 272px;
 }
@@ -20,4 +21,6 @@
 .price_content{
   display: flex;
   justify-content: center;
+  align-items: center;
+  margin: 0;
 }

@@ -24,10 +24,6 @@
   outline: none;
 }
 
-.button_ingredient:hover {
-  box-shadow: inset 0px -2px 0px #4C4CFF;
-}
-
 .scrollbar {
   overflow: hidden;
   overflow-y: scroll;

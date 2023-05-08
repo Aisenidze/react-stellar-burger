@@ -1,5 +1,6 @@
 import styles from './ModalOrder.module.css';
 import done from '../../image/done.svg';
+import PropTypes from 'prop-types';
 
 const ModalOrder = (props) => {
   const { item } = props;
@@ -18,3 +19,7 @@ const ModalOrder = (props) => {
 }
 
 export default ModalOrder;
+
+ModalOrder.propTypes = {
+  item: PropTypes.number.isRequired,
+};

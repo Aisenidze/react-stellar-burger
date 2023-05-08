@@ -5,6 +5,7 @@ import Modal from "../Modal/Modal";
 import BurgerMain from "./elements/BurgerMain";
 import ModalOrder from "../ModalOrder/ModalOrder";
 
+import PropTypes from "prop-types";
 import styles from './BurgerConstructor.module.css';
 
 const BurgerConstructor = (props) => {
@@ -24,11 +25,11 @@ const BurgerConstructor = (props) => {
                 </div>
                 <div className={`${styles.constructor_info} pt-10 pr-4`}>
                     <div className={`${styles.summary} pr-10`}>
-                    <p>2000!</p>
+                    <p className="text text_type_digits-medium">610</p>
                     <CurrencyIcon/>
                     </div>
                     <button
-                        className={`${styles.constructor_btn}`}
+                        className={`${styles.constructor_btn} text text_type_main-small`}
                         onClick={() => setOpen((prev) => !prev)}
                     >Оформить заказ</button>
                 </div>
@@ -40,3 +41,7 @@ const BurgerConstructor = (props) => {
     )
 }
 export default BurgerConstructor;
+
+BurgerConstructor.propTypes = {
+    items: PropTypes.array.isRequired,
+}
