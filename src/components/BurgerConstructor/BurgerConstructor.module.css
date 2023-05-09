@@ -1,0 +1,56 @@
+.constructor_main {
+  display: flex;
+  flex-direction: column;
+}
+
+.constructor_wrapper {
+  overflow-y: scroll;
+  height: 50vh;
+}
+
+/* .constructor_table_scrollbar {
+ 
+} */
+
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: #2F2F37;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8585AD;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border: 3px solid #8585AD;
+}
+
+.constructor_info {
+  display: flex;
+  justify-content: end;
+  justify-items: end;
+}
+
+.summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 9.5px;
+}
+
+.constructor_btn {
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 20px 40px;
+border: none;
+width: 215px;
+height: 64px;
+background: linear-gradient(63.18deg, #801AB3 0%, #4C4CFF 100%);
+
+border-radius: 64px;
+
+color: #f2f2f3;
+}
