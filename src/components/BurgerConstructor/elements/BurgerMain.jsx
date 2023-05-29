@@ -1,35 +1,93 @@
-import { CurrencyIcon, LockIcon, DragIcon, ConstructorElement } from "@ya.praktikum/react-developer-burger-ui-components";
-import Modal from "../../Modal/Modal";
-import { useState } from "react";
-import ModalDetails from "../../ModalDetails/ModalDetails";
+import { ConstructorElement, DragIcon } from "@ya.praktikum/react-developer-burger-ui-components";
+import { useDrag, useDrop } from "react-dnd";
+import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
+import { deleteIngredientThunk, moveIngredientThunk } from "../ConstructorSlice";
+import { useRef } from "react";
+
+import styles from './BurgerMain.module.css'
+
 const BurgerMain = (props) => {
-  const { ingredients, indexof, ingredientlength } = props;
-  const [open, setShow] = useState(false);
+  const { ingredients, indexof, index } = props;
+  const name = indexof === 'top' ? ' (вверх)': indexof === 'bottom' ? ' (низ)' : indexof
+
+  const ref = useRef(null)
+  const dispatch = useDispatch()
+
+  const moveCard = (start, end) => {
+    dispatch(moveIngredientThunk({ start, end }))
+  }
+
+  const [, drop] = useDrop({
+    accept: 'item',
+
+    hover(item, monitor) {
+      if(!ref.current) return;
+
+      const dragIndex = item.index
+      const hoverIndex = index
+
+      if (dragIndex === hoverIndex) return;
+
+      const hoverBoundingRect = ref.current?.getBoundingClientRect()
+
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+      
+      const clientOffset = monitor.getClientOffset()
+
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top
+
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
+
+      moveCard(dragIndex, hoverIndex)
+
+      item.index = hoverIndex;
+    },
+  })
+
+  const [, drag] = useDrag({
+    type: 'item',
+    item: () => {
+      return { id: ingredients.id, index }
+    },
+  })
+  drag(drop(ref))
 
   return (
-    <div>
-      <div onClick={() => setShow((p) => !p)}>
+    <>
+      {(!!indexof) ? 
+        <div className={styles.main}>
         <ConstructorElement
-          type= {indexof === 0 ? 'top' :  (indexof === ingredientlength - 1 ? 'bottom' : '') }
-          isLocked={indexof === 0 ? true :  (indexof === ingredientlength - 1 ? true : false) }
-          text={ingredients.name}
+          type={indexof}
+          isLocked={!!indexof}
+          text={ingredients.name + name}
           price={ingredients.price}
           thumbnail={ingredients.image}
+          handleClose={() => dispatch(deleteIngredientThunk({index}))}
         />
       </div>
-      <Modal open={open} closeModal={() => setShow(false)} marker='modal_1'>
-        <ModalDetails item={ingredients} />
-      </Modal>
-    </div>
+      :
+      <div className={styles.main} ref={ref}>
+        <DragIcon type='primary' />
+        <ConstructorElement
+          type={indexof}
+          isLocked={!!indexof}
+          text={ingredients.name + name}
+          price={ingredients.price}
+          thumbnail={ingredients.image}
+          handleClose={() => dispatch(deleteIngredientThunk({index}))}
+        />
+      </div>
+      }
+    </>
   )
 }
 
 export default BurgerMain;
 
 BurgerMain.propTypes = {
-  ingredients: PropTypes.array.isRequired,
-  indexof: PropTypes.array.isRequired,
-  ingredientlength: PropTypes.array.isRequired,
+  ingredients: PropTypes.object.isRequired,
+  indexof: PropTypes.string.isRequired,
 }

@@ -1,45 +1,49 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+
 import AppHeader from '../AppHeader/AppHeader';
 import BurgerIngredients from '../BurgerIngredients/BurgerIngredients';
 import BurgerConstructor from '../BurgerConstructor/BurgerConstructor';
-import Modal from '../Modal/Modal';
+import { bunsThunk } from '../../AppSlice/AppSlice';
+import './App.css';
+import { constructorThunk } from '../BurgerConstructor/ConstructorSlice';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 function App() {
-  const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [items, setItems] = useState([]);
+  const dispatch = useDispatch();
+  const {buns, error, isLoading} = useSelector(state => state.buns);
 
   useEffect(() => {
-    fetch("https://norma.nomoreparties.space/api/ingredients")
-      .then(res => res.json())
-      .then((result) => {
-        setIsLoaded(true)
-        setItems(result.data)
-      }, 
-      (error) => {
-        setIsLoaded(true);
-        setError(error);
-      })
-  },[])
-console.log(items);
+    dispatch(bunsThunk())
+  }, [dispatch]);
+
   if (error) {
     return <div>Ошибка: {error}</div>;
-  } else if (!isLoaded) {
+  } else if (isLoading) {
+    return <div>Загрузка...</div>;
+  } else if (!buns?.data) {
     return <div>Загрузка...</div>;
   } else {
+    dispatch(constructorThunk(buns));
+    console.log(buns);
+
     return (
+      <DndProvider backend={HTML5Backend}>
       <div className='main'>
         <AppHeader/>
         <div className='template'>
           <div className='wrapper'>
-            <BurgerIngredients items={items}/>
-            <BurgerConstructor items={items}/>
+            <BurgerIngredients items={buns.data}/>
+            <BurgerConstructor items={buns.data}/>
           </div>
         </div>
-        {/* <button onClick={() => setOpen(true)}>Открыть/Закрыть</button> */}
       </div>
+      </DndProvider>
+      
     );
   }
 }
+
 export default App;

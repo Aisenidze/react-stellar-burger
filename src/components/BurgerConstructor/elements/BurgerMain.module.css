@@ -20,10 +20,6 @@
 }
 
 .item_ingredient {
-  /* display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between; */
   display: grid;
   grid-template-columns: 40px 40px auto 100%;
 }
