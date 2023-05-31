@@ -1,8 +1,6 @@
 import { createPortal } from "react-dom";
 import styles from './Modal.module.css';
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import PropTypes from 'prop-types';
-
 
 const modalRootElement = document.querySelector('#modal');
 
@@ -28,7 +26,3 @@ const Modal = (props) => {
 
 
 export default Modal;
-
-Modal.propTypes = {
-  open: PropTypes.array.isRequired,
-}

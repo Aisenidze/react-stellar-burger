@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import styles from './ModalDetails.module.css';
 import PropTypes from 'prop-types';
 
 const ModalDetails = (props) => {
   const { item } = props;
-  const [isModal, setModal] = useState(false);
-  console.log(item);
 
   return (
     <>
@@ -43,5 +40,5 @@ const ModalDetails = (props) => {
 export default ModalDetails;
 
 ModalDetails.propTypes = {
-  item: PropTypes.array.isRequired,
+  item: PropTypes.object.isRequired,
 }
