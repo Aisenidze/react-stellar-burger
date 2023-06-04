@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useDrop } from "react-dnd";
@@ -10,7 +10,7 @@ import ModalOrder from "../ModalOrder/ModalOrder";
 import { applyIngredientsThunk, applyOrderThunk, constructorThunk } from "./ConstructorSlice";
 
 import styles from './BurgerConstructor.module.css';
-import { bunsThunk, countThunk } from "../../AppSlice/AppSlice";
+import { bunsThunk } from "../../AppSlice/AppSlice";
 
 const BurgerConstructor = () => {
   const [open, setOpen] = useState(false);
@@ -38,20 +38,21 @@ const BurgerConstructor = () => {
 
     dispatch(bunsThunk([...applyIngredients, data]))
   }, [applyIngredients, initialIngredient, dispatch])
-
-  return (
+    
+    if(!initialIngredient) return <div>Загрузка...</div> 
+    return (
     <div ref={dropIngredient}>
       <div className={`${styles.constructor_main} pl-10 pt-25`}>
         <div className={`${styles.constructor_wrapper}`}>
-          {initialIngredient && 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {/* {initialIngredient &&  */}
               <BurgerMain ingredients={initialIngredient} indexof={'top'}/>
+            <div className={styles.scrollbar}>
                 {!!applyIngredients.length && applyIngredients.map((main, index) => (
-                  <BurgerMain ingredients={main} key={main._id} indexof={''} index={index} />
-                ))}
-              <BurgerMain ingredients={initialIngredient} indexof={'bottom'}/>
+                  <BurgerMain ingredients={main} key={main._id + index} indexof={''} index={index} />
+                  ))}
             </div>
-          }
+                  <BurgerMain ingredients={initialIngredient} indexof={'bottom'}/>
+          {/* } */}
         </div>
         <div className={`${styles.constructor_info} pt-10 pr-4`}>
           <div className={`${styles.summary} pr-10`}>
