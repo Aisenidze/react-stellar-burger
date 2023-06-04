@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 
 import BurgerIngredient from "./elements/BurgerIngredient/BurgerIngredient";
 import styles from './BurgerIngredients.module.css';
-import { useSelector } from "react-redux";
 
 const BurgerIngredients = (props) => {
   const {items} = props;

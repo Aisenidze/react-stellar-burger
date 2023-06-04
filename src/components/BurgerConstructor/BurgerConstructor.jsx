@@ -42,18 +42,14 @@ const BurgerConstructor = () => {
     if(!initialIngredient) return <div>Загрузка...</div> 
     return (
     <div ref={dropIngredient}>
-      <div className={`${styles.constructor_main} pl-10 pt-25`}>
-        <div className={`${styles.constructor_wrapper}`}>
-          {/* {initialIngredient &&  */}
-              <BurgerMain ingredients={initialIngredient} indexof={'top'}/>
+          <div className={styles.constructor_main}>
+              <div className={styles.top}><BurgerMain ingredients={initialIngredient} indexof={'top'}/></div>
             <div className={styles.scrollbar}>
                 {!!applyIngredients.length && applyIngredients.map((main, index) => (
                   <BurgerMain ingredients={main} key={main._id + index} indexof={''} index={index} />
                   ))}
             </div>
-                  <BurgerMain ingredients={initialIngredient} indexof={'bottom'}/>
-          {/* } */}
-        </div>
+          <div className={styles.bottom}><BurgerMain ingredients={initialIngredient} indexof={'bottom'}/></div>
         <div className={`${styles.constructor_info} pt-10 pr-4`}>
           <div className={`${styles.summary} pr-10`}>
           <p className="text text_type_digits-medium">{countIngredients}</p>
