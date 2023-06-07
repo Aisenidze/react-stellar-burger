@@ -1,5 +1,5 @@
 import done from '../../image/done.svg';
-import styles from './ModalOrder.module.css';
+import styles from './OrderDetails.module.css';
 
 const ModalOrder = (props) => {
   const { item } = props;

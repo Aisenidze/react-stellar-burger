@@ -6,8 +6,8 @@ import { nanoid } from 'nanoid';
 
 import Modal from "../Modal/Modal";
 import BurgerMain from "./elements/BurgerMain";
-import ModalOrder from "../ModalOrder/ModalOrder";
-import { applyIngredientsThunk, applyOrderThunk, constructorThunk } from "./ConstructorSlice";
+import OrderDetail from "../OrderDetails/OrderDetails";
+import { applyIngredientsThunk, applyOrderThunk, constructorThunk } from "../../services/ConstructorSlice/ConstructorSlice";
 
 import styles from './BurgerConstructor.module.css';
 import { bunsThunk } from "../../AppSlice/AppSlice";
@@ -38,18 +38,18 @@ const BurgerConstructor = () => {
 
     dispatch(bunsThunk([...applyIngredients, data]))
   }, [applyIngredients, initialIngredient, dispatch])
-    
-    if(!initialIngredient) return <div>Загрузка...</div> 
     return (
     <div ref={dropIngredient}>
           <div className={styles.constructor_main}>
-              <div className={styles.top}><BurgerMain ingredients={initialIngredient} indexof={'top'}/></div>
-            <div className={styles.scrollbar}>
+              
+                 {initialIngredient ? (<div className={styles.top}><BurgerMain ingredients={initialIngredient} indexof={'top'}/></div>) : (<p className="text text_type_main-large pt-3">Выберите булку</p>)}
+              
+            {initialIngredient ? (<div className={styles.scrollbar}>
                 {!!applyIngredients.length && applyIngredients.map((main, index) => (
-                  <BurgerMain ingredients={main} key={main._id + index} indexof={''} index={index} />
+                  <BurgerMain ingredients={main} key={main.id} indexof={''} index={index} />
                   ))}
-            </div>
-          <div className={styles.bottom}><BurgerMain ingredients={initialIngredient} indexof={'bottom'}/></div>
+            </div>) : (null)}
+                {initialIngredient ? (<div className={styles.bottom}><BurgerMain ingredients={initialIngredient} indexof={'bottom'}/></div>) : (null)}
         <div className={`${styles.constructor_info} pt-10 pr-4`}>
           <div className={`${styles.summary} pr-10`}>
           <p className="text text_type_digits-medium">{countIngredients}</p>
@@ -68,7 +68,7 @@ const BurgerConstructor = () => {
           setOpen(false)
           dispatch(applyOrderThunk({ items: null }))
         }}>
-          {applyOrder && <ModalOrder item={applyOrder} />}
+          {applyOrder && <OrderDetail item={applyOrder} />}
         </Modal>
     </div>
   )

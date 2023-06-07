@@ -1,20 +1,21 @@
 import { useRef, useState } from "react";
 import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
-import PropTypes from "prop-types";
 
 import BurgerIngredient from "./elements/BurgerIngredient/BurgerIngredient";
 import styles from './BurgerIngredients.module.css';
+import { useSelector } from "react-redux";
 
-const BurgerIngredients = (props) => {
-  const {items} = props;
-  const buns = items.filter((item) => item.type === "bun");
-  const sauces = items.filter((item) => item.type === "sauce");
-  const mains = items.filter((item) => item.type === "main");
+const BurgerIngredients = () => {
+  const {buns} = useSelector(state => state.buns);
+  const bun = buns.data.filter((item) => item.type === "bun");
+  const sauces = buns.data.filter((item) => item.type === "sauce");
+  const mains = buns.data.filter((item) => item.type === "main");
   const [currentIngredients, setCurrentIngredients] = useState('bun');
 
   const refBuns = useRef(null);
   const refSauces = useRef(null);
   const refMains = useRef(null);
+
 
   function handleOnIngredient(item) {
       setCurrentIngredients(item)
@@ -51,7 +52,7 @@ const BurgerIngredients = (props) => {
       <div className={styles.scrollbar}>
         <h2 ref={refBuns}>Булки</h2>
         <div className={`${styles.buns} startDrag isDragging`}>
-          {buns.map((bun) => (
+          {bun.map((bun) => (
             <BurgerIngredient ingredient={bun} key={bun._id} />
           ))}
         </div>
@@ -72,7 +73,3 @@ const BurgerIngredients = (props) => {
   )
 }
 export default BurgerIngredients;
-
-BurgerIngredients.propTypes = {
-    items: PropTypes.array.isRequired,
-};

@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import PropTypes from "prop-types";
 import { Counter, CurrencyIcon} from '@ya.praktikum/react-developer-burger-ui-components';
 
-import ModalDetails from "../../../ModalDetails/ModalDetails";
+import ModalDetails from "../../../IngredientDetails/IngredientDetails";
 import Modal from "../../../Modal/Modal";
 import styles from './BurgerIngredient.module.css';
 import { useDrag } from "react-dnd";
@@ -36,7 +36,7 @@ const BurgerIngredient = (props) =>  {
                 <Counter count={countDraggedIngredients} size='small'/>
             </div>
             <div className={`${styles.content} ml-4 mb-10 mr-6`}>
-                <img className={`${styles.illustration} pl-4 pr-4 pb-1`} src={ingredient.image} alt="" />
+                <img className={`${styles.illustration} pl-4 pr-4 pb-1`} src={ingredient.image} alt="картинка-ингредиента" />
                 <div className={styles.price_content}>
                     <p className={`text text_type_digits-default pr-2`}>{ingredient.price}</p>
                     <CurrencyIcon className={`${styles.icon}`}/>
