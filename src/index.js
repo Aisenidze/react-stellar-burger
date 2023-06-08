@@ -1,4 +1,4 @@
-import App from "./components/123/1234";
+import App from "./components/App/App";
 import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
