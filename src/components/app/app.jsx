@@ -7,7 +7,6 @@ import BurgerIngredients from '../BurgerIngredients/BurgerIngredients';
 import BurgerConstructor from '../BurgerConstructor/BurgerConstructor';
 import { bunsThunk } from '../../AppSlice/AppSlice';
 import './App.css';
-// import { constructorThunk } from '../../services/ConstructorSlice/ConstructorSlice';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -26,7 +25,7 @@ function App() {
   } else if (!buns?.data) {
     return <div>Загрузка...</div>;
   } else {
-    // dispatch(constructorThunk(buns));
+
 
     return (
       <DndProvider backend={HTML5Backend}>
