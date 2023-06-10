@@ -1,7 +1,7 @@
 import done from '../../image/done.svg';
 import styles from './OrderDetails.module.css';
 
-const ModalOrder = (props) => {
+const OrderDetails = (props) => {
   const { item } = props;
 
   return (
@@ -17,4 +17,4 @@ const ModalOrder = (props) => {
   )
 }
 
-export default ModalOrder;
+export default OrderDetails;

@@ -6,13 +6,17 @@ import ModalDetails from "../../../IngredientDetails/IngredientDetails";
 import Modal from "../../../Modal/Modal";
 import styles from './BurgerIngredient.module.css';
 import { useDrag } from "react-dnd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { popupCurrentValue } from "../../../../services/ConstructorSlice/ConstructorSlice";
 
 
 const BurgerIngredient = (props) =>  {
-    const {ingredient} = props;
-    const [open, setShow] = useState(false);
+    const {ingredient, popupCheck} = props;
+    const dispatch = useDispatch();
+    // const [open, setShow] = useState(false);
+    console.log('hear');
     const { initialIngredient, applyIngredients } = useSelector((state) => state.cons);
+    
     const countDraggedIngredients = useMemo(() => {
         if (ingredient?.type === 'bun') {
             if (ingredient?._id === initialIngredient?._id) return 2
@@ -31,7 +35,7 @@ const BurgerIngredient = (props) =>  {
     });
     return (
     <div ref={dragRef}>
-        <div className={`${styles.item} pl-5 pr-5 pt-4 pb-4`} onClick={() => setShow((p) => !p)}>
+        <div className={`${styles.item} pl-5 pr-5 pt-4 pb-4`} onClick={() => dispatch(popupCurrentValue({ id: ingredient.id }))}>
             <div className={styles.counter}>
                 <Counter count={countDraggedIngredients} size='small'/>
             </div>
@@ -41,12 +45,14 @@ const BurgerIngredient = (props) =>  {
                     <p className={`text text_type_digits-default pr-2`}>{ingredient.price}</p>
                     <CurrencyIcon className={`${styles.icon}`}/>
                 </div>
-                <p className={`pt-1`}>{ingredient.name}</p>
+                <p className={`pt-1`}>{ingredient.name}</p> 
             </div>
         </div>
-        <Modal open={open} closeModal={() => setShow(false)} marker='modal_1'>
-            <ModalDetails item={ingredient} />
-        </Modal>    
+        {ingredient.id === popupCheck?.id &&
+            <Modal open={popupCheck.open} marker='modal_1'>
+                <ModalDetails item={ingredient} />
+            </Modal> 
+        }
     </div>
     )
 }

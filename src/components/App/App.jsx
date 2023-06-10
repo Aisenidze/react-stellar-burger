@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AppHeader from '../AppHeader/AppHeader';
 import BurgerIngredients from '../BurgerIngredients/BurgerIngredients';
 import BurgerConstructor from '../BurgerConstructor/BurgerConstructor';
-import { bunsThunk } from '../../AppSlice/AppSlice';
+import { bunsThunk } from '../../services/AppSlice/AppSlice';
 import './App.css';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -29,15 +29,15 @@ function App() {
 
     return (
       <DndProvider backend={HTML5Backend}>
-      <div className='main'>
         <AppHeader/>
+        <main className='main'>
         <div className='template'>
           <div className='wrapper'>
             <BurgerIngredients/>
             <BurgerConstructor/>
           </div>
         </div>
-      </div>
+      </main>
       </DndProvider>
       
     );

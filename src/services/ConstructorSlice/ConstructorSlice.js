@@ -5,7 +5,10 @@ const initialState = {
   initialIngredient: null,
   applyIngredients: [],
   applyOrder: null,
-  popup: false,
+  popup: {
+    open: false,
+    id: null,
+  },
   error: '',
 }
 
@@ -73,7 +76,13 @@ const ConstructorSlice = createSlice({
     },
     popupCurrentValue(state, {payload}) {
       console.log(payload)
-      state.popup = payload;
+      if (payload.id) {
+        state.popup.open = true;
+        state.popup.id = payload.id
+        return 
+      }
+      state.popup.open = false;
+      state.popup.id = null;
     }
   },
   extraReducers: {

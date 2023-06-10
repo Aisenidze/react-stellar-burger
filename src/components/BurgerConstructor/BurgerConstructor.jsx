@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useDrop } from "react-dnd";
 import { nanoid } from 'nanoid';
+import { popupCurrentValue } from "../../services/ConstructorSlice/ConstructorSlice";
 
 import Modal from "../Modal/Modal";
 import BurgerMain from "./elements/BurgerMain";
@@ -10,10 +11,10 @@ import OrderDetail from "../OrderDetails/OrderDetails";
 import { applyIngredientsThunk, applyOrderThunk, constructorThunk } from "../../services/ConstructorSlice/ConstructorSlice";
 
 import styles from './BurgerConstructor.module.css';
-import { bunsThunk } from "../../AppSlice/AppSlice";
+import { bunsThunk } from "../../services/AppSlice/AppSlice";
 
-const BurgerConstructor = () => {
-  const [open, setOpen] = useState(false);
+const BurgerConstructor = (props) => {
+  const { popupCheck } = props;
   const dispatch = useDispatch();
 
   const { initialIngredient, applyIngredients, applyOrder } = useSelector((state) => state.cons)
@@ -58,18 +59,15 @@ const BurgerConstructor = () => {
           <button
             className={`${styles.constructor_btn} text text_type_main-small`}
             onClick={() => {
-              setOpen((prev) => !prev)
               dispatch(applyOrderThunk({ items: [...applyIngredients, initialIngredient, initialIngredient]}))
             }}
           >Оформить заказ</button>
         </div>
       </div>
-        <Modal open={open} closeModal={() => {
-          setOpen(false)
-          dispatch(applyOrderThunk({ items: null }))
-        }}>
+      {popupCheck && <Modal open={popupCheck.open} marker='modal_1'>
           {applyOrder && <OrderDetail item={applyOrder} />}
-        </Modal>
+      </Modal>
+      }
     </div>
   )
 }
