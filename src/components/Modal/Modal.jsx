@@ -4,22 +4,24 @@ import styles from './Modal.module.css';
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { ModalOverlay } from "../ModalOverlay/ModalOverlay";
 import { popupCurrentValue } from '../../services/ConstructorSlice/ConstructorSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import OrderDetails from "../OrderDetails/OrderDetails";
+import IngredientDetails from "../IngredientDetails/IngredientDetails";
+import { closeModal } from "../../services/ModalSlice/ModalSlice";
 
 const modalRootElement = document.querySelector('#modal');
 
-const Modal = (props) => {
-  // const { open, closeModal } = props;
-  // const { open } = props;
+const Modal = () => {
+  const { isOpen, modalType, modalContent } = useSelector(state => state.modal);
   const dispatch = useDispatch();
-  const closeByEsc = ((e) => {
+  const closeByEsc = useCallback((e) => {
     if (e.key === 'Escape') {
-      dispatch(popupCurrentValue(false))
+      dispatch(closeModal())
     }
   }, [dispatch]);
   
   const handleClose = useCallback(() => {
-    dispatch(popupCurrentValue(false))
+    dispatch(closeModal())
   },[dispatch])
 
   useEffect(() => {
@@ -27,20 +29,22 @@ const Modal = (props) => {
     return () => document.removeEventListener('keydown', closeByEsc)
   }, [closeByEsc]);
   
-  // if(!open) {
-  //   return null;
-  // } else {
-  // }
-  
+  if(!isOpen) {
+    return null;
+  }
+  console.log(isOpen)
+  console.log(modalType)
+  console.log(modalContent)
 
   return createPortal(
     <>
-      <ModalOverlay onClick={handleClose} onMouseDown={closeByEsc}></ModalOverlay>
+      <ModalOverlay open={isOpen} onClick={handleClose} onMouseDown={closeByEsc}></ModalOverlay>
       <div className={styles.modal_card} >
         <div className={styles.close_icon}>
         <CloseIcon type="primary" onClick={handleClose}/>
         </div>
-        {props.children}
+        {modalType === "ingredient" && <IngredientDetails item={modalContent}/>}
+        {modalType === "constructor" && <OrderDetails item={modalContent}/>}
       </div>
     </>,
     modalRootElement,

@@ -8,13 +8,14 @@ import styles from './BurgerIngredient.module.css';
 import { useDrag } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { popupCurrentValue } from "../../../../services/ConstructorSlice/ConstructorSlice";
+import OrderDetails from "../../../OrderDetails/OrderDetails";
+import { openModal } from "../../../../services/ModalSlice/ModalSlice";
 
 
 const BurgerIngredient = (props) =>  {
-    const {ingredient, popupCheck} = props;
+    const {ingredient} = props;
     const dispatch = useDispatch();
     // const [open, setShow] = useState(false);
-    console.log('hear');
     const { initialIngredient, applyIngredients } = useSelector((state) => state.cons);
     
     const countDraggedIngredients = useMemo(() => {
@@ -35,7 +36,7 @@ const BurgerIngredient = (props) =>  {
     });
     return (
     <div ref={dragRef}>
-        <div className={`${styles.item} pl-5 pr-5 pt-4 pb-4`} onClick={() => dispatch(popupCurrentValue({ id: ingredient.id }))}>
+        <div className={`${styles.item} pl-5 pr-5 pt-4 pb-4`} onClick={() => dispatch(openModal({ isOpen: true, modalType: "ingredient", modalContent: ingredient }))}>
             <div className={styles.counter}>
                 <Counter count={countDraggedIngredients} size='small'/>
             </div>
@@ -48,11 +49,6 @@ const BurgerIngredient = (props) =>  {
                 <p className={`pt-1`}>{ingredient.name}</p> 
             </div>
         </div>
-        {ingredient.id === popupCheck?.id &&
-            <Modal open={popupCheck.open} marker='modal_1'>
-                <ModalDetails item={ingredient} />
-            </Modal> 
-        }
     </div>
     )
 }

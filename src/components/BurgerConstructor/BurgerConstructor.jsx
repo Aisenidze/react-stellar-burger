@@ -1,23 +1,20 @@
-import { useState, useMemo, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useDrop } from "react-dnd";
 import { nanoid } from 'nanoid';
-import { popupCurrentValue } from "../../services/ConstructorSlice/ConstructorSlice";
 
-import Modal from "../Modal/Modal";
 import BurgerMain from "./elements/BurgerMain";
-import OrderDetail from "../OrderDetails/OrderDetails";
-import { applyIngredientsThunk, applyOrderThunk, constructorThunk } from "../../services/ConstructorSlice/ConstructorSlice";
+import { applyIngredientsThunk, constructorThunk } from "../../services/ConstructorSlice/ConstructorSlice";
 
 import styles from './BurgerConstructor.module.css';
 import { bunsThunk } from "../../services/AppSlice/AppSlice";
+import { openModal } from "../../services/ModalSlice/ModalSlice";
 
-const BurgerConstructor = (props) => {
-  const { popupCheck } = props;
+const BurgerConstructor = () => {
   const dispatch = useDispatch();
 
-  const { initialIngredient, applyIngredients, applyOrder } = useSelector((state) => state.cons)
+  const { initialIngredient, applyIngredients } = useSelector((state) => state.cons)
 
   const countIngredients = useMemo(() => {
     if (!initialIngredient) return 0
@@ -38,7 +35,8 @@ const BurgerConstructor = (props) => {
     dispatch(applyIngredientsThunk({ data }));
 
     dispatch(bunsThunk([...applyIngredients, data]))
-  }, [applyIngredients, initialIngredient, dispatch])
+  }, [applyIngredients, dispatch])
+
     return (
     <div ref={dropIngredient}>
           <div className={styles.constructor_main}>
@@ -59,15 +57,11 @@ const BurgerConstructor = (props) => {
           <button
             className={`${styles.constructor_btn} text text_type_main-small`}
             onClick={() => {
-              dispatch(applyOrderThunk({ items: [...applyIngredients, initialIngredient, initialIngredient]}))
+              dispatch(openModal({isOpen: true, modalType: "constructor", modalContent: [...applyIngredients, initialIngredient, initialIngredient]}))
             }}
           >Оформить заказ</button>
         </div>
       </div>
-      {popupCheck && <Modal open={popupCheck.open} marker='modal_1'>
-          {applyOrder && <OrderDetail item={applyOrder} />}
-      </Modal>
-      }
     </div>
   )
 }

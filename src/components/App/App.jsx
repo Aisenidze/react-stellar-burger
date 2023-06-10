@@ -9,6 +9,7 @@ import { bunsThunk } from '../../services/AppSlice/AppSlice';
 import './App.css';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import Modal from '../Modal/Modal';
 
 function App() {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ function App() {
           <div className='wrapper'>
             <BurgerIngredients/>
             <BurgerConstructor/>
+            <Modal></Modal>
           </div>
         </div>
       </main>

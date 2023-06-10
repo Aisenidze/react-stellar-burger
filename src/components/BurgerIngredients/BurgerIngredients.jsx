@@ -7,13 +7,10 @@ import { useSelector } from "react-redux";
 
 const BurgerIngredients = () => {
   const {buns} = useSelector(state => state.buns);
-  const { popup } = useSelector(state => state.cons);
   const bun = buns.data.filter((item) => item.type === "bun");
   const sauces = buns.data.filter((item) => item.type === "sauce");
   const mains = buns.data.filter((item) => item.type === "main");
   const [currentIngredients, setCurrentIngredients] = useState('bun');
-
-  console.log('popup', popup);
 
   const refBuns = useRef(null);
   const refSauces = useRef(null);
@@ -56,19 +53,19 @@ const BurgerIngredients = () => {
         <h2 ref={refBuns}>Булки</h2>
         <div className={`${styles.buns} startDrag isDragging`}>
           {bun.map((bun) => (
-            <BurgerIngredient ingredient={bun} key={bun._id} popupCheck={popup}/>
+            <BurgerIngredient ingredient={bun} key={bun._id}/>
           ))}
         </div>
         <h2 ref={refSauces}>Соусы</h2>
         <div className={`${styles.buns} startDrag isDragging`}>
           {sauces.map((sauce) => (
-            <BurgerIngredient ingredient={sauce} key={sauce._id} popupCheck={popup}/>
+            <BurgerIngredient ingredient={sauce} key={sauce._id}/>
           ))}
         </div>
         <h2 ref={refMains}>Начинки</h2>
         <div className={`${styles.buns} startDrag isDragging`}>
           {mains.map((main) => (
-            <BurgerIngredient ingredient={main} key={main._id} popupCheck={popup}/>
+            <BurgerIngredient ingredient={main} key={main._id}/>
           ))}
         </div>
       </div>

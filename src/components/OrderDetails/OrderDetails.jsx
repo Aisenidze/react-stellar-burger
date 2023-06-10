@@ -3,7 +3,6 @@ import styles from './OrderDetails.module.css';
 
 const OrderDetails = (props) => {
   const { item } = props;
-
   return (
     <div className={styles.main}>
       <div className={`${styles.wrapper} pt-30 pb-30`}>
