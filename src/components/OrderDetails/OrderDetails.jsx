@@ -1,5 +1,6 @@
 import done from '../../image/done.svg';
 import styles from './OrderDetails.module.css';
+import PropTypes from 'prop-types';
 
 const OrderDetails = (props) => {
   const { item } = props;
@@ -17,3 +18,7 @@ const OrderDetails = (props) => {
 }
 
 export default OrderDetails;
+
+OrderDetails.propTypes = {
+  item: PropTypes.object.isRequired,
+}

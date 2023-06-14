@@ -6,14 +6,17 @@ import AppHeader from '../AppHeader/AppHeader';
 import BurgerIngredients from '../BurgerIngredients/BurgerIngredients';
 import BurgerConstructor from '../BurgerConstructor/BurgerConstructor';
 import { bunsThunk } from '../../services/AppSlice/AppSlice';
-import './App.css';
+import styles from './App.module.css';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import Modal from '../Modal/Modal';
+import IngredientDetails from '../IngredientDetails/IngredientDetails';
+import OrderDetails from '../OrderDetails/OrderDetails';
 
 function App() {
   const dispatch = useDispatch();
   const {buns, error, isLoading} = useSelector(state => state.buns);
+  const { modalType, modalContent } = useSelector(state => state.modal);
 
   useEffect(() => {
     dispatch(bunsThunk())
@@ -31,12 +34,15 @@ function App() {
     return (
       <DndProvider backend={HTML5Backend}>
         <AppHeader/>
-        <main className='main'>
-        <div className='template'>
-          <div className='wrapper'>
+        <main className={styles.main}>
+        <div className={styles.template}>
+          <div className={styles.wrapper}>
             <BurgerIngredients/>
             <BurgerConstructor/>
-            <Modal></Modal>
+            <Modal>
+            {modalType === "ingredient" && <IngredientDetails item={modalContent}/>}
+            {modalType === "constructor" && <OrderDetails item={modalContent}/>}
+            </Modal>
           </div>
         </div>
       </main>
