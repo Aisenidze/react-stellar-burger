@@ -1,22 +1,20 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useDrop } from "react-dnd";
 import { nanoid } from 'nanoid';
 
-import Modal from "../Modal/Modal";
 import BurgerMain from "./elements/BurgerMain";
-import ModalOrder from "../ModalOrder/ModalOrder";
-import { applyIngredientsThunk, applyOrderThunk, constructorThunk } from "./ConstructorSlice";
+import { applyIngredientsThunk, constructorThunk } from "../../services/ConstructorSlice/ConstructorSlice";
 
 import styles from './BurgerConstructor.module.css';
-import { bunsThunk, countThunk } from "../../AppSlice/AppSlice";
+import { bunsThunk } from "../../services/AppSlice/AppSlice";
+import { openModal } from "../../services/ModalSlice/ModalSlice";
 
 const BurgerConstructor = () => {
-  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const { initialIngredient, applyIngredients, applyOrder } = useSelector((state) => state.cons)
+  const { initialIngredient, applyIngredients } = useSelector((state) => state.cons)
 
   const countIngredients = useMemo(() => {
     if (!initialIngredient) return 0
@@ -37,22 +35,20 @@ const BurgerConstructor = () => {
     dispatch(applyIngredientsThunk({ data }));
 
     dispatch(bunsThunk([...applyIngredients, data]))
-  }, [applyIngredients, initialIngredient, dispatch])
+  }, [applyIngredients, dispatch])
 
-  return (
+    return (
     <div ref={dropIngredient}>
-      <div className={`${styles.constructor_main} pl-10 pt-25`}>
-        <div className={`${styles.constructor_wrapper}`}>
-          {initialIngredient && 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <BurgerMain ingredients={initialIngredient} indexof={'top'}/>
+          <div className={styles.constructor_main}>
+              
+                 {initialIngredient ? (<div className={styles.top}><BurgerMain ingredients={initialIngredient} indexof={'top'}/></div>) : (<p className="text text_type_main-large pt-3">Выберите булку</p>)}
+              
+            {initialIngredient ? (<div className={styles.scrollbar}>
                 {!!applyIngredients.length && applyIngredients.map((main, index) => (
-                  <BurgerMain ingredients={main} key={main._id} indexof={''} index={index} />
-                ))}
-              <BurgerMain ingredients={initialIngredient} indexof={'bottom'}/>
-            </div>
-          }
-        </div>
+                  <BurgerMain ingredients={main} key={main.id} indexof={''} index={index} />
+                  ))}
+            </div>) : (null)}
+                {initialIngredient ? (<div className={styles.bottom}><BurgerMain ingredients={initialIngredient} indexof={'bottom'}/></div>) : (null)}
         <div className={`${styles.constructor_info} pt-10 pr-4`}>
           <div className={`${styles.summary} pr-10`}>
           <p className="text text_type_digits-medium">{countIngredients}</p>
@@ -61,18 +57,11 @@ const BurgerConstructor = () => {
           <button
             className={`${styles.constructor_btn} text text_type_main-small`}
             onClick={() => {
-              setOpen((prev) => !prev)
-              dispatch(applyOrderThunk({ items: [...applyIngredients, initialIngredient, initialIngredient]}))
+              dispatch(openModal({isOpen: true, modalType: "constructor", modalContent: [...applyIngredients, initialIngredient, initialIngredient]}))
             }}
           >Оформить заказ</button>
         </div>
       </div>
-        <Modal open={open} closeModal={() => {
-          setOpen(false)
-          dispatch(applyOrderThunk({ items: null }))
-        }}>
-          {applyOrder && <ModalOrder item={applyOrder} />}
-        </Modal>
     </div>
   )
 }

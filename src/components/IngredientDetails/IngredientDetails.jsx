@@ -1,7 +1,7 @@
-import styles from './ModalDetails.module.css';
+import styles from './IngredientDetails.module.css';
 import PropTypes from 'prop-types';
 
-const ModalDetails = (props) => {
+const IngredientDetails = (props) => {
   const { item } = props;
 
   return (
@@ -11,7 +11,7 @@ const ModalDetails = (props) => {
           <div className={`${styles.heading} `}>
           <p className="text text_type_main-large">Детали ингредиента</p>
           </div>
-          <img src={item.image_large} alt={item.name} />
+          <img src={item.image_large} alt='увеличенная картинка ингедиента' />
           <p className={`${styles.name} text text_type_main-medium pt-4 pb-8`}>{item.name}</p>
           <ul className={styles.info}>
             <li className={`${styles.items} text text_type_main-default text_color_inactive pr-5`}>
@@ -37,8 +37,8 @@ const ModalDetails = (props) => {
   )
 }
 
-export default ModalDetails;
+export default IngredientDetails;
 
-ModalDetails.propTypes = {
+IngredientDetails.propTypes = {
   item: PropTypes.object.isRequired,
 }

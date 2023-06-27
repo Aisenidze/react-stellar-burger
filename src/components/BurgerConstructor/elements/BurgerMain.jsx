@@ -3,7 +3,7 @@ import { useDrag, useDrop } from "react-dnd";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
-import { deleteIngredientThunk, moveIngredientThunk } from "../ConstructorSlice";
+import { deleteIngredientThunk, moveIngredientThunk } from "../../../services/ConstructorSlice/ConstructorSlice";
 import { useRef } from "react";
 
 const BurgerMain = (props) => {

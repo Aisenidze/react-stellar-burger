@@ -1,5 +1,6 @@
 import {createSlice,createAsyncThunk} from '@reduxjs/toolkit';
-import { baseUrl } from '../utils/api';
+import { baseUrl } from '../../utils/api';
+import { _checkResponse } from '../../utils/checkresponse';
 
 const initialState = {
   buns: [],
@@ -9,15 +10,10 @@ const initialState = {
 
 const bunsThunk = createAsyncThunk(
   'buns/getBurger',
-  async (count, {rejectWithValue}) => {
-    try{
+  async () => {
       const response = await fetch(`${baseUrl}/ingredients`);
-      const data = await response.json();
+      const data = await _checkResponse(response);
       return data;
-    }
-    catch(error){
-      return rejectWithValue(error.response.data);
-    }
   }   
 );
 

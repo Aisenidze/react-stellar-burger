@@ -1,9 +1,9 @@
 import done from '../../image/done.svg';
-import styles from './ModalOrder.module.css';
+import styles from './OrderDetails.module.css';
+import PropTypes from 'prop-types';
 
-const ModalOrder = (props) => {
+const OrderDetails = (props) => {
   const { item } = props;
-
   return (
     <div className={styles.main}>
       <div className={`${styles.wrapper} pt-30 pb-30`}>
@@ -17,4 +17,8 @@ const ModalOrder = (props) => {
   )
 }
 
-export default ModalOrder;
+export default OrderDetails;
+
+OrderDetails.propTypes = {
+  item: PropTypes.object.isRequired,
+}

@@ -5,15 +5,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import AppHeader from '../AppHeader/AppHeader';
 import BurgerIngredients from '../BurgerIngredients/BurgerIngredients';
 import BurgerConstructor from '../BurgerConstructor/BurgerConstructor';
-import { bunsThunk } from '../../AppSlice/AppSlice';
-import './App.css';
-import { constructorThunk } from '../BurgerConstructor/ConstructorSlice';
+import { bunsThunk } from '../../services/AppSlice/AppSlice';
+import styles from './App.module.css';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import Modal from '../Modal/Modal';
+import IngredientDetails from '../IngredientDetails/IngredientDetails';
+import OrderDetails from '../OrderDetails/OrderDetails';
 
 function App() {
   const dispatch = useDispatch();
   const {buns, error, isLoading} = useSelector(state => state.buns);
+  const { modalType, modalContent } = useSelector(state => state.modal);
 
   useEffect(() => {
     dispatch(bunsThunk())
@@ -26,19 +29,23 @@ function App() {
   } else if (!buns?.data) {
     return <div>Загрузка...</div>;
   } else {
-    dispatch(constructorThunk(buns));
+
 
     return (
       <DndProvider backend={HTML5Backend}>
-      <div className='main'>
         <AppHeader/>
-        <div className='template'>
-          <div className='wrapper'>
-            <BurgerIngredients items={buns.data}/>
-            <BurgerConstructor items={buns.data}/>
+        <main className={styles.main}>
+        <div className={styles.template}>
+          <div className={styles.wrapper}>
+            <BurgerIngredients/>
+            <BurgerConstructor/>
+            <Modal>
+            {modalType === "ingredient" && <IngredientDetails item={modalContent}/>}
+            {modalType === "constructor" && <OrderDetails item={modalContent}/>}
+            </Modal>
           </div>
         </div>
-      </div>
+      </main>
       </DndProvider>
       
     );

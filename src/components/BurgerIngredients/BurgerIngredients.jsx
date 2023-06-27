@@ -1,28 +1,28 @@
 import { useRef, useState } from "react";
 import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
-import PropTypes from "prop-types";
 
 import BurgerIngredient from "./elements/BurgerIngredient/BurgerIngredient";
 import styles from './BurgerIngredients.module.css';
 import { useSelector } from "react-redux";
 
-const BurgerIngredients = (props) => {
-  const {items} = props;
-  const buns = items.filter((item) => item.type === "bun");
-  const sauces = items.filter((item) => item.type === "sauce");
-  const mains = items.filter((item) => item.type === "main");
+const BurgerIngredients = () => {
+  const {buns} = useSelector(state => state.buns);
+  const bun = buns.data.filter((item) => item.type === "bun");
+  const sauces = buns.data.filter((item) => item.type === "sauce");
+  const mains = buns.data.filter((item) => item.type === "main");
   const [currentIngredients, setCurrentIngredients] = useState('bun');
 
   const refBuns = useRef(null);
   const refSauces = useRef(null);
   const refMains = useRef(null);
 
+
   function handleOnIngredient(item) {
       setCurrentIngredients(item)
   }
 
   function scrollingTo(value) {
-    value.current.scrollIntoView();
+    value.current.scrollIntoView({behavior:"smooth"});
   }
 
   return (
@@ -52,20 +52,20 @@ const BurgerIngredients = (props) => {
       <div className={styles.scrollbar}>
         <h2 ref={refBuns}>Булки</h2>
         <div className={`${styles.buns} startDrag isDragging`}>
-          {buns.map((bun) => (
-            <BurgerIngredient ingredient={bun} key={bun._id} />
+          {bun.map((bun) => (
+            <BurgerIngredient ingredient={bun} key={bun._id}/>
           ))}
         </div>
         <h2 ref={refSauces}>Соусы</h2>
         <div className={`${styles.buns} startDrag isDragging`}>
           {sauces.map((sauce) => (
-            <BurgerIngredient ingredient={sauce} key={sauce._id} />
+            <BurgerIngredient ingredient={sauce} key={sauce._id}/>
           ))}
         </div>
         <h2 ref={refMains}>Начинки</h2>
         <div className={`${styles.buns} startDrag isDragging`}>
           {mains.map((main) => (
-            <BurgerIngredient ingredient={main} key={main._id} />
+            <BurgerIngredient ingredient={main} key={main._id}/>
           ))}
         </div>
       </div>
@@ -73,7 +73,3 @@ const BurgerIngredients = (props) => {
   )
 }
 export default BurgerIngredients;
-
-BurgerIngredients.propTypes = {
-    items: PropTypes.array.isRequired,
-};
