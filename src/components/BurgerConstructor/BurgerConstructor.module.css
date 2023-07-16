@@ -60,7 +60,7 @@
 
 .constructor_info {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   justify-items: end;
 }
 
@@ -81,8 +81,6 @@ border: none;
 width: 215px;
 height: 64px;
 background: linear-gradient(63.18deg, #801AB3 0%, #4C4CFF 100%);
-
 border-radius: 64px;
-
 color: #f2f2f3;
 }

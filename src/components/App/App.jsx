@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
 
 
 import AppHeader from '../AppHeader/AppHeader';
@@ -12,12 +13,19 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import Modal from '../Modal/Modal';
 import IngredientDetails from '../IngredientDetails/IngredientDetails';
 import OrderDetails from '../OrderDetails/OrderDetails';
+import { AutorizationPage } from '../../pages/Autorization/Autorization';
+import { ForgotPasswordPage } from '../../pages/ForgotPassword/ForgotPassword';
+import { IngredientPage } from '../../pages/IngredientPage/IngredientPage';
+import { NotFound404 } from '../../pages/NotFoundPage/NotFoundPage';
+import { ProfilePage } from '../../pages/Profile/Profile';
+import { RegisterPage } from '../../pages/RegisterPage/RegisterPage';
+import { ResetPasswordPage } from '../../pages/ResetPassword/ResetPassword';
 
 function App() {
   const dispatch = useDispatch();
   const {buns, error, isLoading} = useSelector(state => state.buns);
   const { modalType, modalContent } = useSelector(state => state.modal);
-
+  
   useEffect(() => {
     dispatch(bunsThunk())
   }, [dispatch]);
@@ -30,12 +38,12 @@ function App() {
     return <div>Загрузка...</div>;
   } else {
 
-
     return (
       <DndProvider backend={HTML5Backend}>
         <AppHeader/>
         <main className={styles.main}>
-        <div className={styles.template}>
+        <Routes>
+          <Route path='/' element={
           <div className={styles.wrapper}>
             <BurgerIngredients/>
             <BurgerConstructor/>
@@ -44,10 +52,17 @@ function App() {
             {modalType === "constructor" && <OrderDetails item={modalContent}/>}
             </Modal>
           </div>
-        </div>
+          }/>
+          <Route path='/register' element={<RegisterPage/>}/>
+          <Route path='/login' element={<AutorizationPage/>}/>
+          <Route path='/forgot-password' element={<ForgotPasswordPage/>}/>
+          <Route path='/ingredients/:id' element={<IngredientPage/>}/>
+          <Route path='/profile' element={<ProfilePage/>}/>
+          <Route path='/reset-password' element={<ResetPasswordPage/>}/>
+          <Route path='/404' element={<NotFound404/>}/>
+        </Routes>
       </main>
       </DndProvider>
-      
     );
   }
 }

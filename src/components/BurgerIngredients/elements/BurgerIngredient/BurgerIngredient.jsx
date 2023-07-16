@@ -1,14 +1,9 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import PropTypes from "prop-types";
 import { Counter, CurrencyIcon} from '@ya.praktikum/react-developer-burger-ui-components';
-
-import ModalDetails from "../../../IngredientDetails/IngredientDetails";
-import Modal from "../../../Modal/Modal";
 import styles from './BurgerIngredient.module.css';
 import { useDrag } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import { popupCurrentValue } from "../../../../services/ConstructorSlice/ConstructorSlice";
-import OrderDetails from "../../../OrderDetails/OrderDetails";
 import { openModal } from "../../../../services/ModalSlice/ModalSlice";
 
 
@@ -27,7 +22,7 @@ const BurgerIngredient = (props) =>  {
         return 0
     }, [ingredient,initialIngredient,applyIngredients])
 
-    const [{isDragStart}, dragRef] = useDrag({
+    const [, dragRef] = useDrag({
         type: 'ingredient',
         item: ingredient,
         collect: (monitor) => ({

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 const IngredientDetails = (props) => {
   const { item } = props;
-
   return (
     <>
       <div className={styles.main}>
