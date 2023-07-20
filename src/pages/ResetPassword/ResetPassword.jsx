@@ -10,7 +10,7 @@ export function ResetPasswordPage() {
   const dispatch = useDispatch();
   const [passwordValue, setPasswordValue] = useState("");
   const [value, setValue] = useState('');
-  const login = JSON.parse(sessionStorage.getItem('login'));
+  const forgotPage = useSelector(state => state.forgotpassword);
   const { error, success } = useSelector(state => state.resetpassword);
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -31,12 +31,14 @@ export function ResetPasswordPage() {
   };
 
   useEffect(() => {
+    if (!forgotPage?.success) {
+      navigate('/forgot-password');
+    }
+  }, [forgotPage?.success, navigate]);
+
+  useEffect(() => {
     if (success) navigate('/')
   }, [success, navigate]);
-  
-  if (login) {
-    return navigate('/profile')
-  }
 
   return (
     <main className={styles.main}>

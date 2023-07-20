@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './Autorization.module.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Input, PasswordInput } from '@ya.praktikum/react-developer-burger-ui-components';
 import { SendAutorizationData } from '../../services/AutorizationSlice/AutorizationSlice';
 import { useEffect, useRef, useState } from 'react';
@@ -8,12 +8,14 @@ import { useEffect, useRef, useState } from 'react';
 
 export function AutorizationPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { success } = useSelector((state) => state.autorization)
   const inputRef = useRef(null);
-  const { success } = useSelector(state => state.autorization);
   const login = JSON.parse(sessionStorage.getItem('login'));
+  const fromPage = location.state?.from?.pathname !== '/login' ? location.state?.from?.pathname : '/'
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,8 +32,8 @@ export function AutorizationPage() {
   }
 
   useEffect(() => {
-    if (login) navigate('/');
-  }, [login, navigate, success]);
+    if (login && success) navigate(fromPage);
+  }, [login, navigate, fromPage, success]);
 
   return(
     <main className={styles.main}>
@@ -67,7 +69,7 @@ export function AutorizationPage() {
         Вы - новый пользователь?
         <Link to='/register' className={`${styles.link} ml-2`}>
           Зарегистрироваться
-          </Link>
+        </Link>
       </p>
       <p className={`${styles.text} text text_type_main-default`}>
         Забыли пароль?

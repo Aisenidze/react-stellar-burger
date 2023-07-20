@@ -20,6 +20,7 @@ import { NotFound404 } from '../../pages/NotFoundPage/NotFoundPage';
 import { ProfilePage } from '../../pages/Profile/Profile';
 import { RegisterPage } from '../../pages/RegisterPage/RegisterPage';
 import { ResetPasswordPage } from '../../pages/ResetPassword/ResetPassword';
+import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
 
 function App() {
   const dispatch = useDispatch();
@@ -53,12 +54,29 @@ function App() {
             </Modal>
           </div>
           }/>
-          <Route path='/register' element={<RegisterPage/>}/>
-          <Route path='/login' element={<AutorizationPage/>}/>
-          <Route path='/forgot-password' element={<ForgotPasswordPage/>}/>
-          <Route path='/ingredients/:id' element={<IngredientPage/>}/>
-          <Route path='/profile' element={<ProfilePage/>}/>
-          <Route path='/reset-password' element={<ResetPasswordPage/>}/>
+          <Route path='/register' element={
+            <ProtectedRoute>
+              <RegisterPage/>
+            </ProtectedRoute>
+            }/>
+          <Route path='/login' element={
+            <ProtectedRoute>
+            <AutorizationPage/>
+            </ProtectedRoute>}/>
+          <Route path='/forgot-password' element={
+            <ProtectedRoute>
+              <ForgotPasswordPage/>
+            </ProtectedRoute>}/>
+          <Route path='/ingredient/:idIngr' element={<IngredientPage/>}/>
+          <Route path='/profile' element={
+            <ProtectedRoute>
+              <ProfilePage/>
+            </ProtectedRoute>
+          }/>
+          <Route path='/reset-password' element={
+            <ProtectedRoute>
+            <ResetPasswordPage/>
+            </ProtectedRoute>}/>
           <Route path='/404' element={<NotFound404/>}/>
         </Routes>
       </main>

@@ -1,8 +1,8 @@
 import styles from './Profile.module.css';
 import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getUserInfoThunk, patchUserInfoThunk } from '../../services/UserSlice/UserSlice';
 import { LogoutUserThunk } from '../../services/AutorizationSlice/AutorizationSlice';
 
@@ -10,8 +10,6 @@ export function ProfilePage() {
     const dispatch = useDispatch();
     const currentName = useSelector(state => state.autorization.user?.name) || '';
     const currentEmail = useSelector(state => state.autorization.user?.email) || '';
-    const login = useMemo(() => JSON.parse(sessionStorage.getItem('login')), []);
-    const navigate = useNavigate();
     const match = useLocation();
     const inputRef = useRef(null);
     const [data, setData] = useState({
@@ -71,12 +69,8 @@ export function ProfilePage() {
     }, [currentEmail, currentName])
 
     useEffect(() => {
-        if (login) {
-            dispatch(getUserInfoThunk());
-        } else {
-            navigate('/login')
-        }
-    }, [dispatch, login, navigate]);
+        dispatch(getUserInfoThunk());
+    }, [dispatch]);
 
     return (
         <main className={styles.main}>

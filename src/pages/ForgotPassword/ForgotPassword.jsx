@@ -12,7 +12,6 @@ export function ForgotPasswordPage() {
     const [value, setValue] = useState('')
     const inputRef = useRef(null)
     const { success } = useSelector(state => state.forgotpassword);
-    const login = JSON.parse(sessionStorage.getItem('login'));
 
     const onIconClick = () => {
         setTimeout(() => inputRef.current.focus(), 0)
@@ -25,14 +24,11 @@ export function ForgotPasswordPage() {
     }, [dispatch])
 
     useEffect(() => {
+        console.log(success);
         if (success) {
             navigate('/reset-password')
         }
     }, [success, navigate])
-
-    if (login) {
-        return (navigate('/profile'))
-    }
     
     return (
         <main className={styles.main}>

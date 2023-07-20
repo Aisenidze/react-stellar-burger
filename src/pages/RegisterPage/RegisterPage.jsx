@@ -9,8 +9,6 @@ import { SendRegistrationData } from '../../services/RegistrationSlice/Registrat
 export function RegisterPage() {
     const navigate = useNavigate();
     const { success } = useSelector(state => state.registration);
-    const login = JSON.parse(sessionStorage.getItem('login'));
-    console.log(success);
     const dispatch = useDispatch();
 
     const handleRegister = (e) => {
@@ -39,10 +37,6 @@ export function RegisterPage() {
     useEffect(() => {
         if (success) navigate('/login')
     }, [success, navigate])
-
-    if (login) {
-        return navigate('/profile')
-    }
 
     return (
         <main className={styles.main}>

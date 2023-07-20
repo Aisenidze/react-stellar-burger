@@ -1,8 +1,18 @@
+import { useEffect } from 'react';
 import styles from './IngredientDetails.module.css';
 import PropTypes from 'prop-types';
 
 const IngredientDetails = (props) => {
   const { item } = props;
+  console.log(window.history);
+
+  
+  useEffect(() => {
+    return () => {
+      if (window.history.state?.modal) window.history.pushState({}, 'close', `/`);
+    }
+  }, [])
+
   return (
     <>
       <div className={styles.main}>
