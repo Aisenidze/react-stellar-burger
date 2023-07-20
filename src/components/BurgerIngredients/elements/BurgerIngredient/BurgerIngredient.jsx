@@ -1,23 +1,16 @@
-import { useState, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import { Counter, CurrencyIcon} from '@ya.praktikum/react-developer-burger-ui-components';
-
-import ModalDetails from "../../../IngredientDetails/IngredientDetails";
-import Modal from "../../../Modal/Modal";
 import styles from './BurgerIngredient.module.css';
 import { useDrag } from "react-dnd";
 import { useDispatch, useSelector } from "react-redux";
-import { popupCurrentValue } from "../../../../services/ConstructorSlice/ConstructorSlice";
-import OrderDetails from "../../../OrderDetails/OrderDetails";
 import { openModal } from "../../../../services/ModalSlice/ModalSlice";
 
-
 const BurgerIngredient = (props) =>  {
-    const {ingredient} = props;
+    const { ingredient } = props;
     const dispatch = useDispatch();
-    // const [open, setShow] = useState(false);
     const { initialIngredient, applyIngredients } = useSelector((state) => state.cons);
-    
+
     const countDraggedIngredients = useMemo(() => {
         if (ingredient?.type === 'bun') {
             if (ingredient?._id === initialIngredient?._id) return 2
@@ -27,16 +20,21 @@ const BurgerIngredient = (props) =>  {
         return 0
     }, [ingredient,initialIngredient,applyIngredients])
 
-    const [{isDragStart}, dragRef] = useDrag({
+    const [, dragRef] = useDrag({
         type: 'ingredient',
         item: ingredient,
         collect: (monitor) => ({
             isDragStart: monitor.isDragging()
         })
     });
+    const handleOpen = useCallback(() => {
+        dispatch(openModal({ isOpen: true, modalType: "ingredient", modalContent: ingredient }))
+        window.history.pushState({ modal: ingredient._id },'check',`/ingredient/${ingredient._id}`);
+    }, [dispatch, ingredient])
+
     return (
     <div ref={dragRef}>
-        <div className={`${styles.item} pl-5 pr-5 pt-4 pb-4`} onClick={() => dispatch(openModal({ isOpen: true, modalType: "ingredient", modalContent: ingredient }))}>
+        <div className={`${styles.item} pl-5 pr-5 pt-4 pb-4`} onClick={() => handleOpen()}>
             <div className={styles.counter}>
                 <Counter count={countDraggedIngredients} size='small'/>
             </div>

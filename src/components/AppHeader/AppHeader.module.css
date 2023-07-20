@@ -3,6 +3,7 @@
     justify-content: space-between;
     background-color: #1C1C21;
     border: none;
+    text-decoration: none;
 }
 
 .button_header:hover {

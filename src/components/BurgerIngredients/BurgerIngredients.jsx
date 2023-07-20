@@ -1,75 +1,80 @@
-import { useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { useInView } from 'react-intersection-observer';
 import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
-
 import BurgerIngredient from "./elements/BurgerIngredient/BurgerIngredient";
 import styles from './BurgerIngredients.module.css';
-import { useSelector } from "react-redux";
 
 const BurgerIngredients = () => {
   const {buns} = useSelector(state => state.buns);
   const bun = buns.data.filter((item) => item.type === "bun");
   const sauces = buns.data.filter((item) => item.type === "sauce");
   const mains = buns.data.filter((item) => item.type === "main");
-  const [currentIngredients, setCurrentIngredients] = useState('bun');
 
-  const refBuns = useRef(null);
-  const refSauces = useRef(null);
-  const refMains = useRef(null);
-
-
-  function handleOnIngredient(item) {
-      setCurrentIngredients(item)
-  }
+  const { ref: refBuns, inView: bunsIsView, entry: bunsEntry } = useInView({
+    threshold: 0,
+  });
+  const { ref: refSauces, inView: saucesIsView, entry: bunsSauces } = useInView({
+    threshold: 0,
+  });
+  const { ref: refMains, inView: mainsIsView, entry: mainsEntry } = useInView({
+    threshold: 0,
+  });
 
   function scrollingTo(value) {
-    value.current.scrollIntoView({behavior:"smooth"});
+    value?.target.scrollIntoView({behavior:"smooth"});
   }
-
+  
   return (
     <div className={styles.main}>
       <h1>Соберите бургер</h1>
       <nav className={styles.menu_ingredients}>
-        <Tab value="buns" active={currentIngredients === 'bun'} onClick={() => {
-          handleOnIngredient('bun')
-          scrollingTo(refBuns);
+        <Tab value="buns" active={bunsIsView} onClick={() => {
+          scrollingTo(bunsEntry);
         }}>
           Булки
         </Tab>
-        <Tab value="sauces" active={currentIngredients === 'sauce'} onClick={() => {
-          handleOnIngredient('sauce')
-          scrollingTo(refSauces);
+        <Tab value="sauces" active={saucesIsView && !bunsIsView} onClick={() => {
+          scrollingTo(bunsSauces);
         }}>
           Соусы
         </Tab>
-        <Tab value="mains" active={currentIngredients === 'main'} onClick={() => {
-          handleOnIngredient('main')
-          scrollingTo(refMains);
+        <Tab value="mains" active={mainsIsView && !bunsIsView && !saucesIsView} onClick={() => {
+          scrollingTo(mainsEntry);
         }}>
           Начинки
         </Tab>
       </nav>
 
       <div className={styles.scrollbar}>
-        <h2 ref={refBuns}>Булки</h2>
-        <div className={`${styles.buns} startDrag isDragging`}>
-          {bun.map((bun) => (
-            <BurgerIngredient ingredient={bun} key={bun._id}/>
-          ))}
+        <div ref={refBuns}>
+          <h2>Булки</h2>
+          <div className={`${styles.buns} startDrag isDragging`}>
+            {bun.map((bun) => (
+              <BurgerIngredient ingredient={bun} key={bun._id}/>
+            ))}
+          </div>
         </div>
-        <h2 ref={refSauces}>Соусы</h2>
-        <div className={`${styles.buns} startDrag isDragging`}>
-          {sauces.map((sauce) => (
-            <BurgerIngredient ingredient={sauce} key={sauce._id}/>
-          ))}
+
+        <div ref={refSauces}>
+          <h2>Соусы</h2>
+          <div className={`${styles.buns} startDrag isDragging`}>
+            {sauces.map((sauce) => (
+              <BurgerIngredient ingredient={sauce} key={sauce._id}/>
+            ))}
+          </div>
         </div>
-        <h2 ref={refMains}>Начинки</h2>
-        <div className={`${styles.buns} startDrag isDragging`}>
-          {mains.map((main) => (
-            <BurgerIngredient ingredient={main} key={main._id}/>
-          ))}
+
+        <div ref={refMains}>
+          <h2>Начинки</h2>
+          <div className={`${styles.buns} startDrag isDragging`}>
+            {mains.map((main) => (
+              <BurgerIngredient ingredient={main} key={main._id}/>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   )
 }
+
 export default BurgerIngredients;

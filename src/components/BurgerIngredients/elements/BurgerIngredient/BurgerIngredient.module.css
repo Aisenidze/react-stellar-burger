@@ -6,10 +6,6 @@
   max-width: 272px;
 }
 
-/* .counter{
-  
-} */
-
 .content{
   display: flex;
   flex-direction: column;
@@ -17,7 +13,6 @@
   margin: 0;
 }
 
- 
 .price_content{
   display: flex;
   justify-content: center;

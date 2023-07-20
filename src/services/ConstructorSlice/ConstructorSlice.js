@@ -1,6 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { baseUrl } from "../../utils/api";
-
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   initialIngredient: null,
