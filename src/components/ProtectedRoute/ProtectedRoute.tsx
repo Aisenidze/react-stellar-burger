@@ -1,38 +1,26 @@
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { FC, ReactElement, useEffect, useMemo } from "react";
+import { FC } from "react";
+import { Route, Redirect } from "react-router-dom";
+import { useAppSelector } from "../../services/types";
 
-interface ProtectedRouteProps {
-  children: ReactElement;
-}
+export const ProtectedRoute: FC<{ children: React.ReactNode, path: string }> = ({ children, ...props }) => {
+    const isAuthChecked = useAppSelector(state => state.user.isAuthChecked);
+    const user = useAppSelector(state => state.user.userData.name);
 
-export const ProtectedRoute: FC<ProtectedRouteProps> = ({ children }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const auth = JSON.parse(sessionStorage.getItem('login') || '{}');
+    return (
+        <Route
+            {...props}
+            render={({ location }) => (
+                isAuthChecked && user
+                    ? (children)
+                    : (
+                        <Redirect to={{
+                            pathname: '/login',
+                            state: { from: location },
+                        }}
+                        />
+                    )
+            )}
+        />
+    );
 
-  const login = useMemo(() => {
-    return location?.pathname === '/register' || location?.pathname === '/login' || location?.pathname === '/reset-password' || location?.pathname === '/forgot-password'
-  }, [location?.pathname])
-
-  const notLogin = useMemo(() => {
-    return location?.pathname === '/profile'
-  }, [location?.pathname]);
-
-  useEffect(() => {
-    if (auth && login) {
-      navigate('/');
-    }
-  }, [auth, login, navigate]);
-
-  useEffect(() => {
-    if (!auth && notLogin) {
-      navigate('/login')
-    }
-  }, [notLogin, auth, navigate])
-
-  if (!auth && !login) {
-    return <Navigate to={location} state={{ from: location}} />
-  }
-
-  return children;
 }

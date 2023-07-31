@@ -1,57 +1,46 @@
-import { FC, useCallback, useMemo } from "react";
-import { Counter, CurrencyIcon} from '@ya.praktikum/react-developer-burger-ui-components';
+import { useMemo, FC } from 'react';
+import { CurrencyIcon, Counter } from '@ya.praktikum/react-developer-burger-ui-components'
+import { useDrag } from 'react-dnd';
+import { TIngredient, useAppDispatch, useAppSelector } from '../../../../services/types';
+import { getCardData } from '../../../../services/reducers/dataReducer';
+import { openIngredient } from '../../../../services/reducers/modalReducer';
 import styles from './BurgerIngredient.module.css';
-import { useDrag } from "react-dnd";
-import { openModal } from "../../../../services/ModalSlice/ModalSlice";
-import { useAppDispatch, useAppSelector } from "../../../../hooks/typeHook";
-import { BunsData } from "../../../../services/AppSlice/AppSlice";
+import classNames from 'classnames';
 
-interface BurgerIngredientProps {
-    ingredient: BunsData;
+interface IBurgerIngredientProps {
+    cardData: TIngredient
 }
 
-const BurgerIngredient: FC<BurgerIngredientProps> = (props) =>  {
-    const { ingredient } = props;
+const BurgerIngredient: FC<IBurgerIngredientProps> = ({ cardData }) => {
     const dispatch = useAppDispatch();
-    const { initialIngredient, applyIngredients } = useAppSelector((state) => state.cons);
-
-    const countDraggedIngredients = useMemo(() => {
-        if (ingredient?.type === 'bun') {
-            if (ingredient?._id === initialIngredient?._id) return 2
-            return 0
-        }
-        if (!!(applyIngredients?.length)) return applyIngredients.filter((element: BunsData) => element?._id === ingredient._id).length
-        return 0
-    }, [ingredient,initialIngredient,applyIngredients])
+    const store = useAppSelector(store => store);
+    const ingredients = store.burgerConstructor.ingredients;
 
     const [, dragRef] = useDrag({
-        type: 'ingredient',
-        item: ingredient,
-        collect: (monitor) => ({
-            isDragStart: monitor.isDragging()
-        })
+        type: "ingredient",
+        item: cardData,
     });
-    const handleOpen = useCallback(() => {
-        dispatch(openModal({ isOpen: true, modalType: "ingredient", modalContent: ingredient }))
-        window.history.pushState({ modal: ingredient._id },'check',`/ingredient/${ingredient._id}`);
-    }, [dispatch, ingredient])
+
+    const getCardsData = (cardData: TIngredient) => {
+        dispatch(getCardData(cardData))
+        dispatch(openIngredient)
+    }
+
+    const quantity = useMemo(() => {
+        return ingredients.filter(ingredient => ingredient._id === cardData._id).length
+    }, [ingredients, cardData._id])
 
     return (
-    <div ref={dragRef}>
-        <div className={`${styles.item} pl-5 pr-5 pt-4 pb-4`} onClick={() => handleOpen()}>
-            <div className={styles.counter}>
-                <Counter count={countDraggedIngredients} size='small'/>
+        <li ref={dragRef} tabIndex={0} className={styles.card} onClick={() => getCardsData(cardData)}>
+            {quantity !== 0 && <Counter count={quantity} size="default" />}
+            <img src={cardData.image} alt={cardData.name} className={styles.card__image}></img>
+            <div className={classNames(styles.card__price, `mb-2`)}>
+                <p className={classNames(styles.card__count, `mr-2`)}>{cardData.price}</p>
+                <CurrencyIcon type="primary" />
             </div>
-            <div className={`${styles.content} ml-4 mb-10 mr-6`}>
-                <img className={`${styles.illustration} pl-4 pr-4 pb-1`} src={ingredient.image} alt="картинка-ингредиента" />
-                <div className={styles.price_content}>
-                    <p className={`text text_type_digits-default pr-2`}>{ingredient.price}</p>
-                    <CurrencyIcon type='primary' />
-                </div>
-                <p className={`pt-1`}>{ingredient.name}</p> 
-            </div>
-        </div>
-    </div>
+            <p className={classNames(styles.card__description, `text text_type_main-small`)}>{cardData.name}</p>
+        </li >
     )
 }
+
 export default BurgerIngredient;

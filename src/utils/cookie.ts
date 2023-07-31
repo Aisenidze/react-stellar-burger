@@ -1,43 +1,40 @@
-/* eslint-disable no-useless-escape */
-export function setCookie(name: any, value: any, props?: any) {
-  props = props || {};
-  let exp = props.expires;
-  if (typeof exp == 'number' && exp) {
-    const d = new Date();
-    d.setTime(d.getTime() + exp * 1000);
-    exp = props.expires = d;
-  }
-  if (exp && exp.toUTCString) {
-    props.expires = exp.toUTCString();
-  }
-  value = encodeURIComponent(value);
-  let updatedCookie = name + '=' + value;
-  for (const propName in props) {
-    updatedCookie += '; ' + propName;
-    const propValue = props[propName];
-    if (propValue !== true) {
-      updatedCookie += '=' + propValue;
+import { TSetCookieProps } from "../types";
+
+export const getCookie: (name: string) => string | undefined = (name) => {
+    const matches = document.cookie.match(
+        // eslint-disable-next-line no-useless-escape
+        new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
+    );
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export const setCookie: (name: string, value: string | number | boolean, props: TSetCookieProps) => void = (name, value, props) => {
+    props = {
+        path: '/',
+        ...props
+    } || {};
+
+    let exp = props.expires;
+    if (typeof exp == 'number' && exp) {
+        const d = new Date();
+        d.setTime(d.getTime() + exp * 1000);
+        exp = props.expires = d;
     }
-  }
-  document.cookie = updatedCookie;
-} 
-
-// В этой функции получаем куку с помощью регулярного выражения
-
-export function getCookie(name: string) {
-  const matches = document.cookie.match(
-    new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)')
-  );
-  return matches ? decodeURIComponent(matches[1]) : undefined;
+    if (exp && exp.toUTCString) {
+        props.expires = exp.toUTCString();
+    }
+    value = encodeURIComponent(value);
+    let updatedCookie = name + '=' + value;
+    for (const propName in props) {
+        updatedCookie += '; ' + propName;
+        const propValue = props[propName];
+        if (propValue !== true) {
+            updatedCookie += '=' + propValue;
+        }
+    }
+    document.cookie = updatedCookie;
 }
 
-export function CookiesDelete() {
-	let cookies = document.cookie.split(";");
-	for (let i = 0; i < cookies.length; i++) {
-		let cookie = cookies[i];
-		let eqPos = cookie.indexOf("=");
-		let name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
-		document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-		document.cookie = name + '=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-	}
-}
+export const deleteCookie: (name: string) => void = (name) => {
+    setCookie(name, '', { expires: -1 });
+};

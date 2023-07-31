@@ -1,20 +1,27 @@
-
-.close_icon {
+.modal {
+  border-radius: 40px;
+  background: #1C1C21;
+  z-index: 8;
   position: absolute;
-  top: 63px;
-  right: 43px;
-}
-
-.modal_card {
+  overflow: hidden;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  position: fixed;
+  display: flex;
+  flex-direction: column;
   width: 720px;
-  min-height: 539px;
-  z-index: 3;
-  background: #1C1C21;
-  border: 1px solid rgba(76, 76, 255, 0.2);
-  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 0px 1px rgba(0, 0, 0, 0.04);
-  border-radius: 40px;
+  transition: all 0.3s;
+}
+
+.modal__closeButton {
+  position: absolute;
+  top: 60px;
+  right: 40px;
+  z-index: 9;
+}
+
+.modal__closeButton:hover {
+  opacity: 0.3;
+  transition: all 0.3s;
+  cursor: pointer;
 }

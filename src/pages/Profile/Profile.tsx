@@ -1,137 +1,94 @@
+import { useEffect, FC } from 'react';
+import { Link, NavLink, Route, useLocation } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
+import { onLogout } from '../../services/actions/actions';
+import { setWebsocketConnection, setWebsocketOffline } from '../../services/reducers/dataReducer';
+import { BASE_WSS } from '../../utils/utils';
+import { getCookie } from '../../utils/cookie';
+import { useAppDispatch, useAppSelector } from '../../services/types';
+import { IUseLocation } from '../../types';
 import styles from './Profile.module.css';
-import { Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
-import { NavLink, useLocation } from 'react-router-dom';
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { getUserInfoThunk, patchUserInfoThunk } from '../../services/UserSlice/UserSlice';
-import { LogoutUserThunk } from '../../services/AutorizationSlice/AutorizationSlice';
-import { useAppDispatch, useAppSelector } from '../../hooks/typeHook';
+import Loading from '../Loading/Loading';
+import { ProfileData } from '../../components/ProfileData/ProfileData';
+import { OrdersFeed } from '../../components/OrdersFeed/OrdersFeed';
 
-export const ProfilePage: FC = () => {
+export const Profile: FC = () => {
+    const logoutRequest = useAppSelector(store => store.user.logoutRequest);
+    const orders = useAppSelector(store => store.data?.orders)
     const dispatch = useAppDispatch();
-    const currentName = useAppSelector(state => state?.autorization?.user?.name) || '';
-    const currentEmail = useAppSelector(state => state?.autorization?.user?.email) || '';
-    const match = useLocation();
-    const inputRef = useRef<HTMLInputElement>(null);
-    const [data, setData] = useState({
-        name: currentName,
-        email: currentEmail,
-        password: '',
-    });
-    const render = data.name !== currentName || data.email !== currentEmail || data.password.length > 0
-
-    const options = {
-        name: 'name',
-        error: false,
-        ref: inputRef,
-        onIconClick: () => onIconClick(),
-        errorText: 'Ошибка',
-        extraClass: 'ml-1'
-    }
-
-    const onIconClick = () => {
-        setTimeout(() => inputRef?.current?.focus(), 0)
-    }
-
-    const saveInfo = (e: any) => {
-        e.preventDefault();
-        const { email, name, password } = data;
-        dispatch(patchUserInfoThunk({ email, name, password }));
-        setData({
-            name: currentName,
-            email: currentEmail,
-            password: ''
-        })
-    }
-
-    const cancelChanges = () => {
-        setData({
-            name: '',
-            email: '',
-            password: ''
-        })
-    }
-
-    const logoutUser = useCallback(() => {
-        dispatch(LogoutUserThunk());
-        sessionStorage
-            .setItem('login', JSON.stringify(false));
-    }, [dispatch])
-
+    const { url } = useRouteMatch();
+    const location = useLocation<IUseLocation>();
+    const accessToken = getCookie('accessToken');
     
     useEffect(() => {
-        setData({
-            name: currentName,
-            email: currentEmail,
-            password: ''
-        })
-    }, [currentEmail, currentName])
+        dispatch(setWebsocketConnection(`${BASE_WSS}/orders?token=${accessToken}`))
+        return () => {
+            dispatch(setWebsocketOffline())
+        }
+    }, [url, dispatch, accessToken])
 
-    useEffect(() => {
-        dispatch(getUserInfoThunk());
-    }, [dispatch]);
+    const onLogoutHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        dispatch(onLogout())
+    }
+
+    if (logoutRequest) {
+        return (
+            <Loading />
+        );
+    }
 
     return (
-        <main className={styles.main}>
-        <nav className={`${styles.nav} mr-15`}>
-            <NavLink
-                to={'/profile'}
-                className={match.pathname==='/profile' ? `${styles.active} ${styles.tab}` : styles.tab}
+        <div className={`${styles.profile}`}>
+            <nav className={`mt-30 ${styles.menu}`}>
+                <NavLink to={`${url}`} exact className={`text text_type_main-medium ${styles.link}`} activeClassName={styles.link_active}>
+                    Профиль
+                </NavLink>
+                <NavLink to={`${url}/orders`} className={`text text_type_main-medium ${styles.link}`} activeClassName={styles.link_active}>
+                    История заказов
+                </NavLink>
+                <button
+                    type="button"
+                    className={`text text_type_main-medium text_color_inactive from global ${styles.button}`}
+                    onClick={onLogoutHandler}
                 >
-                <h3 className='text text_type_main-medium mt-4 mb-8'>Профиль</h3>
-            </NavLink>
-            <NavLink
-                to={'/profile/orders'}
-                className={match.pathname==='/profile/orders' ? `${styles.active} ${styles.tab}` : styles.tab}
-                >
-                <h3 className='text text_type_main-medium mb-8'>История заказов</h3>
-            </NavLink>
-            <NavLink
-                to={'/login'}
-                className={match.pathname==='/login' ? `${styles.active} ${styles.tab}` : styles.tab}>
-                <h3 onClick={logoutUser} className='text text_type_main-medium mb-4'>Выход</h3>
-            </NavLink>
-            <p className={`${styles.text} mt-20`}>В этом разделе вы можете
-                изменять свои персональные данные</p>
-        </nav>
-        <section className={styles.section}>
-            <form className={styles.section} onSubmit={saveInfo}>
-                <div className='mt-6'>
-                    <Input
-                        type='text'
-                        placeholder={'Имя'}
-                        icon={'EditIcon'}
-                        onChange={e => setData({ ...data, name: e.target.value })}
-                        value={data.name}
-                        {...options}
-                    />
-                </div>
-                <div className='mt-6'>
-                    <Input type='email' placeholder={'Логин'} icon={'EditIcon'}
-                        onChange={e => setData({ ...data, email: e.target.value })}
-                        value={data.email}
-                        {...options} />
-                </div>
-                <div className='mt-6 mb-6'>
-                    <Input type='password' placeholder={'Пароль'} icon={'EditIcon'}
-                        onChange={e => setData({ ...data, password: e.target.value })}
-                        value={data.password}
-                        {...options} />
-                </div>
-                {render ? <div className={styles.box}>
-                    <div className={styles.button}><Button
-                        onClick={cancelChanges}
-                        htmlType='button'
-                        type='primary'
-                        size='medium'>Отмена
-                    </Button></div>
-                    <div className={styles.button}><Button
-                        htmlType='submit'
-                        type='primary'
-                        size='medium'>Сохранить
-                    </Button></div>
-                </div> : null}
-            </form>
-        </section >
-    </main>
+                    Выход
+                </button>
+
+                {
+                    location.pathname === `${url}` &&
+                    <p className={`mt-20 text text_color_inactive text_type_main-default ${styles.text}`}>В этом разделе вы можете изменить свои персональные данные
+                    </p>
+                }
+
+                {
+                    location.pathname.startsWith(`${url}/orders`) &&
+                    <p className={`mt-20 text text_color_inactive text_type_main-default ${styles.text}`}>В этом разделе вы можете просмотреть свою историю заказов
+                    </p>
+                }
+
+            </nav >
+            <article className={`mt-10 ${styles.content}`}>
+                <Route path={`${url}`} exact>
+                    <ProfileData />
+                </Route>
+                <Route path={`${url}/orders`} exact>
+                    {!orders ?
+                        <Loading />
+                        :
+                        orders && orders.orders.length === 0
+                            ?
+                            <>
+                                <p className={`mt-20 text text_color_inactive text_type_main-large ${styles.textNoOrders}`}>Нет заказов</p>
+                                <Link to={`/`} className={`mt-10 text text_type_main-medium ${styles.createOrder}`} >
+                                    Создать первый заказ
+                                </Link>
+                            </>
+                            :
+                            <OrdersFeed />
+                        }
+                    </Route>
+            </article >
+        </div>
     )
 }
