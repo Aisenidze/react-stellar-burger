@@ -1,91 +1,114 @@
-import { FC, useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import AppHeader from '../AppHeader/AppHeader';
-import BurgerIngredients from '../BurgerIngredients/BurgerIngredients';
-import BurgerConstructor from '../BurgerConstructor/BurgerConstructor';
-import { bunsThunk } from '../../services/AppSlice/AppSlice';
-import styles from './App.module.css';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-import Modal from '../Modal/Modal';
-import IngredientDetails from '../IngredientDetails/IngredientDetails';
-import OrderDetails from '../OrderDetails/OrderDetails';
-import { AutorizationPage } from '../../pages/Autorization/Autorization';
-import { ForgotPasswordPage } from '../../pages/ForgotPassword/ForgotPassword';
-import { IngredientPage } from '../../pages/IngredientPage/IngredientPage';
-import { NotFound404 } from '../../pages/NotFoundPage/NotFoundPage';
-import { ProfilePage } from '../../pages/Profile/Profile';
-import { RegisterPage } from '../../pages/RegisterPage/RegisterPage';
-import { ResetPasswordPage } from '../../pages/ResetPassword/ResetPassword';
-import { ProtectedRoute } from '../ProtectedRoute/ProtectedRoute';
-import { useAppDispatch, useAppSelector } from '../../hooks/typeHook';
+import React from 'react';
+import AppHeader from '../app-header/app-header';
+import Modal from '../modal/modal';
+import OrderBrief from '../order-brief/order-brief';
+import IngredientDetails from '../ingredient-details/ingredient-details';
+import { getAllIngredients } from '../../services/actions/actions';
+import { Constructor } from '../../pages/constructor/constructor';
+import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Login } from '../../pages/login/login';
+import { Register } from '../../pages/register/register';
+import { Reset } from '../../pages/reset/reset';
+import { ResetConfirm } from '../../pages/reset-confirm/reset-confirm';
+import { Profile } from '../../pages/profile/profile';
+import { ProtectedRoute } from '../protected-route/protected-route';
+import { NotFound } from '../../pages/not-found/not-found';
+import Spinner from '../../pages/spinner/spinner';
+import { checkAuth } from '../../services/actions/actions';
+import { Feed } from '../../pages/feed/feed';
+import OrderDetails from '../order-details/order-details';
+import '../../pages/index';
+import { useTypedDispatch } from '../../services/types';
+import { useTypedSelector } from '../../services/types';
+import { IUseLocation } from '../../types';
 
-const App: FC = () => {
-  const dispatch = useAppDispatch();
-  
-  const { buns, error, isLoading } = useAppSelector((state) => state.buns);
-  const { modalType, modalContent } = useAppSelector((state) => state.modal);
-  
-  useEffect(() => {
-    dispatch(bunsThunk())
-  }, [dispatch]);
+const App = () => {
 
-  if (error) {
-    return <div>Ошибка: {error}</div>;
-  } else if (isLoading) {
-    return <div>Загрузка...</div>;
-  } else if (!buns?.data) {
-    return <div>Загрузка...</div>;
-  } else {
+    const location = useLocation<IUseLocation>();
+    const state = useTypedSelector(store => store)
+    const dispatch = useTypedDispatch();
+    const history = useHistory();
+
+    const background = location.state?.background;
+
+    React.useEffect(() => {
+        dispatch(getAllIngredients());
+    }, []);
+
+    React.useEffect(() => {
+        dispatch(checkAuth());
+    }, []);
+
+    const handleCloseModals = () => {
+        history.goBack()
+    }
 
     return (
-      <DndProvider backend={HTML5Backend}>
-        <AppHeader/>
-        <main className={styles.main}>
-        <Routes>
-          <Route path='/' element={
-          <div className={styles.wrapper}>
-            <BurgerIngredients/>
-            <BurgerConstructor/>
-              {modalType === "ingredient" && modalContent &&
-                <Modal>
-                  <IngredientDetails item={modalContent}/>
-                </Modal>}
-              {modalType === "constructor" && modalContent &&
-                <Modal>
-                  <OrderDetails item={modalContent}/>
-                </Modal>}
-          </div>
-          }/>
-          <Route path='/register' element={
-            <ProtectedRoute>
-              <RegisterPage/>
-            </ProtectedRoute>
-            }/>
-          <Route path='/login' element={
-            <ProtectedRoute>
-            <AutorizationPage/>
-            </ProtectedRoute>}/>
-          <Route path='/forgot-password' element={
-            <ProtectedRoute>
-              <ForgotPasswordPage/>
-            </ProtectedRoute>}/>
-          <Route path='/ingredient/:idIngr' element={<IngredientPage/>}/>
-          <Route path='/profile' element={
-            <ProtectedRoute>
-              <ProfilePage/>
-            </ProtectedRoute>
-          }/>
-          <Route path='/reset-password' element={
-            <ProtectedRoute>
-            <ResetPasswordPage/>
-            </ProtectedRoute>}/>
-          <Route path='/404' element={<NotFound404/>}/>
-        </Routes>
-      </main>
-      </DndProvider>
+        <div className={`body`} >
+            <AppHeader />
+            <Switch location={background || location}>
+                <Route path='/' exact>
+                    <Constructor />
+                </Route>
+                <ProtectedRoute path='/profile/orders/:id' children={<OrderDetails />} />
+                <ProtectedRoute path='/profile' children={<Profile />} />
+                <Route path='/login' exact>
+                    {!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest ? <Spinner /> : <Login />}
+                </Route>
+                <Route path='/register' exact>
+                    {!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest ? <Spinner /> : <Register />}
+                </Route>
+                <Route path='/forgot-password' exact>
+                    {!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest ? <Spinner /> : <Reset />}
+                </Route>
+                <Route path='/reset-password' exact>
+                    {(!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest) ? <Spinner /> : state.user.resetRequestConfirmed ? <ResetConfirm /> : <Redirect to={{ pathname: '/forgot-password' }} />}
+                </Route>
+                <Route path='/ingredients/:id' >
+                    {state.data.ingredients?.length && <IngredientDetails />}
+                </Route>
+                <Route path='/feed/:id' >
+                    <OrderDetails />
+                </Route>
+                <Route path='/feed' >
+                    <Feed />
+                </Route>
+                <Route path="*">
+                    <NotFound />
+                </Route>
+            </Switch>
+
+            {background &&
+                (<>
+                    <Route path='/ingredients/:id' >
+                        <Modal onClose={handleCloseModals} >
+                            {state.data.ingredients?.length && <IngredientDetails />}
+                        </Modal>
+                    </Route >
+                    <Route path='/feed/:id' >
+                        <Modal onClose={handleCloseModals} >
+                            <OrderDetails />
+                        </Modal>
+                    </Route >
+                    <ProtectedRoute path='/order'>
+                        {state.burgerConstructor.orderNumber &&
+                            (
+                                <Modal onClose={handleCloseModals} >
+                                    <OrderBrief />
+                                </Modal>
+                            )
+                        }
+                    </ProtectedRoute>
+                    <ProtectedRoute path='/profile/orders/:id'>
+                        <Modal onClose={handleCloseModals} >
+                            <OrderDetails />
+                        </Modal>
+                    </ProtectedRoute>
+                </>
+                )
+            }
+        </div >
     );
-  }
 }
 
 export default App;
