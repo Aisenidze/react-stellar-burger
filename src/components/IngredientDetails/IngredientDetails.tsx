@@ -1,51 +1,51 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAppSelector } from '../../services/types';
+import { IUseParams } from '../../types';
+import Loading from '../../pages/Loading/Loading';
 import styles from './IngredientDetails.module.css';
-import { BunsData } from '../../services/AppSlice/AppSlice';
 
-interface IngredientDetailsProps {
-  item: BunsData;
-}
+export const IngredientDetails: FC = () => {
+    const { id } = useParams<IUseParams>();
+    const ingredients = useAppSelector(store => store.data?.ingredients);
 
-const IngredientDetails: FC<IngredientDetailsProps> = (props) => {
-  const { item } = props;
-  
-  useEffect(() => {
-    return () => {
-      if (window.history.state?.modal) window.history.pushState({}, 'close', `/`);
-    }
-  }, [])
+    const ingredientMatch = ingredients?.find(item => {
+        return item._id === id
+    })
 
-  return (
-    <>
-      <div className={styles.main}>
-        <div className={`${styles.wrapper} pl-10 pr-10 pt-10 pb-15`}>
-          <div className={`${styles.heading} `}>
-          <p className="text text_type_main-large">Детали ингредиента</p>
+    const { image_large, name, calories, carbohydrates, fat, proteins } = ingredientMatch || {};
+
+    if (ingredientMatch) {
+        return (
+          <div className={`pl-10 pr-10 ${styles.ingredient}`}>
+          <div className={`mt-10 ${styles.ingredient__header}`}>
+              <h2 className={`text text_type_main-large ${styles.ingredient__title}`}>Детали ингредиента</h2>
           </div>
-          <img src={item.image_large} alt='увеличенная картинка ингедиента' />
-          <p className={`${styles.name} text text_type_main-medium pt-4 pb-8`}>{item.name}</p>
-          <ul className={styles.info}>
-            <li className={`${styles.items} text text_type_main-default text_color_inactive pr-5`}>
-              <p className='text text_type_main-default text_color_inactive'>Калории, ккал</p>
-              {item.calories}
-            </li>
-            <li className={`${styles.items} text text_type_main-default text_color_inactive pr-5`}>
-              <p className={'text text_type_main-default text_color_inactive'}>Белки, г</p>
-              {item.proteins}
-            </li>
-            <li className={`${styles.items} text text_type_main-default text_color_inactive pr-5`}>
-              <p className={'text text_type_main-default text_color_inactive'}>Жиры, г</p>
-              {item.fat}
-            </li>
-            <li className={`${styles.items} text text_type_main-default text_color_inactive`}>
-              <p className={'text text_type_main-default text_color_inactive'}>Углеводы, г</p>
-              {item.carbohydrates}
-            </li>
+          <img className={`mt-15 mb-15 ${styles.ingredient__image}`} src={image_large} alt='Ингредиент' />
+          <p className={`text text_type_main-medium mt-4 mb-8 ${styles.ingredient__name}`}>{name}</p>
+          <ul className={`text text_type_main-default mb-15 ${styles.ingredient__listItem}`}>
+              <li className={`text text_type_main-default ${styles.ingredient__item}`}>
+                  <p className={`text text_type_main-default ${styles.ingredient__itemText}`}>Калории,ккал</p>
+                  <p className={`${styles.ingredient__itemValue}`}>{calories}</p>
+              </li>
+              <li className={`text text_type_main-default ${styles.ingredient__item}`}>
+                  <p className={`text text_type_main-default ${styles.ingredient__itemText}`}>Белки, г</p>
+                  <p className={`${styles.ingredient__itemValue}`}>{carbohydrates}</p>
+              </li>
+              <li className={`text text_type_main-default ${styles.ingredient__item}`}>
+                  <p className={`text text_type_main-default ${styles.ingredient__itemText}`}>Жиры, г</p>
+                  <p className={`${styles.ingredient__itemValue}`}>{fat}</p>
+              </li>
+              <li className={`text text_type_main-default ${styles.ingredient__item}`}>
+                  <p className={`text text_type_main-default ${styles.ingredient__itemText}`}>Углеводы, г</p>
+                  <p className={`${styles.ingredient__itemValue}`}>{proteins}</p>
+              </li>
           </ul>
-        </div>
       </div>
-    </>
-  )
+        );
+    } else {
+        return (<Loading />)
+    }
 }
 
 export default IngredientDetails;

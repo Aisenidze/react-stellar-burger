@@ -1,41 +1,39 @@
-import { Logo, BurgerIcon, ProfileIcon, ListIcon} from "@ya.praktikum/react-developer-burger-ui-components";
-import { Link, useLocation } from 'react-router-dom';
+import { FC } from 'react';
+import { Logo, ProfileIcon, ListIcon, BurgerIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import { Link, NavLink } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../services/types';
+import { IUseLocation } from '../../types';
 import styles from './AppHeader.module.css';
-import { FC } from "react";
+import classNames from 'classnames';
 
 const AppHeader: FC = () => {
-    const match = useLocation().pathname;
+    const { pathname } = useLocation<IUseLocation>();
+    const store = useAppSelector(store => store);
 
     return (
         <header className={styles.header}>
-            <nav className={styles.wrapper}>
-                <div className={styles['header_left-content']}>
-                    <Link className={styles.button_header} to='/'>
-                        <div className={`${styles.box_items} pr-5 pt-4 pb-4`}>
-                            <BurgerIcon type={match === '/' ? 'primary' : 'secondary'} />
-                            <p className={`text text_type_main-default ${match !== '/' && 'text_color_inactive'} pl-2`}>Конструктор</p>
-                        </div>
-                    </Link>
-                    <button className={styles.button_header}>
-                    <div className={`${styles.box_items} pr-5 pt-4 pb-4`}>
-                        <ListIcon type={match === '/lens' ? 'primary' : 'secondary'}/>
-                        <p className={`text text_type_main-default ${match !== '/lens' && 'text_color_inactive'} pl-2`}>Лента заказов</p>
-                    </div>
-                    </button>
+            <nav className={styles.header__nav}>
+                <div className={classNames(styles.header__group, styles.link)}>
+                    <NavLink to='/' className={classNames(styles.header__button, `pl-5 pr-5 pt-4 pb-4 mt-4 mb-4`)} activeClassName={styles.active}>
+                        <BurgerIcon type={pathname === '/' ? "primary" : "secondary"} />
+                        <p className={`text text_type_main-default ml-2`} style={pathname !== '/' ? { color: '#8585AD' } : undefined}>Конструктор</p>
+                    </NavLink>
+                    <NavLink to='/feed' className={classNames(styles.header__button, `pl-5 pr-5 pt-4 pb-4 mt-4 mb-4`)} activeClassName={styles.active}>
+                        <ListIcon type={pathname.startsWith('/feed') ? "primary" : "secondary"} />
+                        <p className={`text text_type_main-default ml-2`} style={!pathname.startsWith('/feed') ? { color: '#8585AD' } : undefined}>Лента заказов</p>
+                    </NavLink>
                 </div>
-                <Link className={styles.logo} to='/'>
+                <Link to='/'>
                     <Logo />
                 </Link>
-                <div className={styles['header_right-content']}>
-                <Link className={styles.button_header} to='/profile'>
-                    <div className={`${styles.box_items} pr-5 pt-4 pb-4`}>
-                        <ProfileIcon type={match === '/profile' ? 'primary' : 'secondary'} />
-                        <p className={`text text_type_main-default ${match !== '/profile' && 'text_color_inactive'} pl-2`}>Личный кабинет</p>
-                    </div>
-                </Link>
-                </div>
+                <NavLink to={`/profile`} className={classNames(styles.header__button, styles.link,`pl-5 pr-5 pt-4 pb-4 mt-4 mb-4`)} activeClassName={styles.active}>
+                    <ProfileIcon type={pathname.startsWith('/profile') ? "primary" : "secondary"} />
+                    <p className={`text text_type_main-default ml-2`} style={!pathname.startsWith('/profile') ? { color: '#8585AD' } : undefined}>{store.user.userData.name ? store.user.userData.name : 'Личный кабинет'} </p>
+                </NavLink>
             </nav>
-        </header>
-    ) 
+        </header >
+    );
 }
+
 export default AppHeader;

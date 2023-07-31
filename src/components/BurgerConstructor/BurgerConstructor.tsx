@@ -1,78 +1,151 @@
-import { useMemo, useCallback, FC } from "react";
-import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useDrop } from "react-dnd";
-import { nanoid } from 'nanoid';
+import { useMemo, FC } from 'react';
+import { useDrop } from 'react-dnd';
+import { ConstructorElement, CurrencyIcon, Button } from '@ya.praktikum/react-developer-burger-ui-components'
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+import classNames from 'classnames';
 
-import BurgerMain from "./elements/BurgerMain";
-import { applyIngredientsThunk, constructorThunk } from "../../services/ConstructorSlice/ConstructorSlice";
-import { BunsData, bunsThunk } from "../../services/AppSlice/AppSlice";
-import { openModal } from "../../services/ModalSlice/ModalSlice";
-import { useNavigate } from "react-router";
+import { useAppDispatch, useAppSelector } from '../../services/types';
+import { onPlaceOrder } from '../../services/actions/actions';
+import { Ingredient } from './elements/Ingredient';
+import Loading from '../../pages/Loading/Loading';
+import { TIngredient } from '../../services/types';
+import { IUseLocation } from '../../types';
 import styles from './BurgerConstructor.module.css';
-import { useAppDispatch, useAppSelector } from "../../hooks/typeHook";
 
-const BurgerConstructor: FC = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const login = JSON.parse(sessionStorage.getItem('login') || '{}');
-  const { initialIngredient, applyIngredients } = useAppSelector((state) => state.cons);
-  
-  const countIngredients = useMemo(() => {
-    if (!initialIngredient) return 0
-    return [...applyIngredients, initialIngredient, initialIngredient].reduce((acc, el) => acc + el.price, 0)
-  }, [applyIngredients, initialIngredient]);
+interface IBurgerConstructorProps {
+    onDropHandler: (mutatedIngredient: TIngredient & { index: string }) => void
+}
 
-  const [, dropIngredient] = useDrop(() => ({
-    accept: 'ingredient',
-    drop: (item => addElement(item))
-  }));
+const BurgerConstructor: FC<IBurgerConstructorProps> = ({ onDropHandler }) => {
+    const dispatch = useAppDispatch();
+    const store = useAppSelector(store => store);
+    const user = useAppSelector(store => store.user.userData.name);
+    const orderRequest = useAppSelector(store => store.burgerConstructor.orderRequest)
+    const location = useLocation<IUseLocation>();
+    const history = useHistory();
+    const { burgerConstructor } = store || {} || undefined;
 
-  const addElement = useCallback((element) => {
-    const data = { ...element, id: nanoid() }
+    const [{ isHover }, dropTarget] = useDrop({
+        accept: 'ingredient',
+        drop: (ingredient: TIngredient) => {
+            let index = uuidv4()
+            let mutatedIngredient = { index, ...ingredient }
+            onDropHandler(mutatedIngredient);
+            return { mutatedIngredient }
+        },
+        collect: monitor => ({
+            isHover: monitor.isOver(),
+        }),
+    })
 
-    if (data.type === 'bun') {
-      return dispatch(constructorThunk({ data, edit: 'initialIngredient'}))
+    const isActive = (burgerConstructor.bun && user.length ? true : false)
+
+    const cart = useMemo(() => {
+        if (burgerConstructor.bun && burgerConstructor.ingredients)
+            return [burgerConstructor?.bun?._id, ...burgerConstructor.ingredients?.map((item) => item?._id), burgerConstructor?.bun._id]
+    }, [burgerConstructor.bun, burgerConstructor.ingredients])
+
+    const total = useMemo(() => {
+        if (burgerConstructor.bun && burgerConstructor.ingredients) {
+            return burgerConstructor?.bun.price * 2 + Array.from(burgerConstructor?.ingredients).reduce((accum: number, item: TIngredient) => {
+                if (item) {
+                    accum += item.price;
+                }
+                return accum;
+            }, 0)
+        }
+
+    }, [burgerConstructor])
+
+    const handlePlaceOrder = (event: React.FormEvent<HTMLFormElement>) => {
+        if (!user) {
+            history.push('/login')
+        } else if (cart) {
+            event.preventDefault();
+            dispatch(onPlaceOrder(cart))
+            history.push({
+                pathname: '/order',
+                state: {
+                    background: location
+                }
+            })
+        }
     }
 
-    dispatch(applyIngredientsThunk({ data }));
-
-    dispatch(bunsThunk())
-  }, [dispatch]);
-
-  const handleOrder = () => {
-    if (!login) {
-      navigate('/login');
-      return;
+    if (orderRequest) {
+        return (
+            <Loading />
+        );
     }
-    dispatch(openModal({
-      isOpen: true,
-      modalType: "constructor",
-      modalContent: [...applyIngredients, initialIngredient, initialIngredient]}))
-  }
 
     return (
-    <div ref={dropIngredient}>
-      <div className={styles.constructor_main}>
-        {initialIngredient ? (<div className={styles.top}><BurgerMain ingredients={initialIngredient} indexof={'top'}/></div>) : (<p className="text text_type_main-large pt-3">Выберите булку</p>)}  
-        {initialIngredient &&
-          <div className={styles.scrollbar}>
-            {!!applyIngredients.length
-              && applyIngredients.map((main: BunsData, index: number) => (
-                <BurgerMain ingredients={main} key={main.id} indexof={''} elementIndex={index} />
-              ))}
-          </div>}
-        {initialIngredient && <div className={styles.bottom}><BurgerMain ingredients={initialIngredient} indexof={'bottom'}/></div>}
+        <form ref={dropTarget} name='order' action='#' onSubmit={handlePlaceOrder} className={classNames(`mt-25 ml-4`, {
+            [styles['burger-constructor']]: !isHover,
+            [styles['burger-constructor__hover']]: isHover,
+        })}>
+            {
+                burgerConstructor?.bun &&
+                <div className={classNames(styles.burgerConstructor__item, 'mb-4 pr-2')}>
+                    <ConstructorElement
+                        type="top"
+                        isLocked={true}
+                        text={`${burgerConstructor?.bun?.name} (верх)`}
+                        price={burgerConstructor?.bun?.price}
+                        thumbnail={burgerConstructor?.bun?.image}
+                    />
+                </div>
+            }
+            <ul className={styles.burgerConstructor__listitem}>
+                {burgerConstructor.ingredients.map((position, index) => <Ingredient key={position.index} id={position.index} position={position} index={index} />)}
+            </ul>
+            {
+                burgerConstructor?.bun &&
+                <div className={classNames(styles.burgerConstructor__item, 'mt-4 pr-2')}>
+                    <ConstructorElement
+                        type="bottom"
+                        isLocked={true}
+                        text={`${burgerConstructor?.bun?.name} (низ)`}
+                        price={burgerConstructor?.bun?.price}
+                        thumbnail={burgerConstructor?.bun?.image}
+                    />
+                </div>
+            }
+            <div className={classNames(styles.burgerConstructor__checkout, `mt-10 pb-10`)}>
+                {burgerConstructor?.bun && burgerConstructor?.ingredients &&
+                    <div className={styles.burgerConstructor__total}>
+                        <p className={classNames(styles.burgerConstructor__ordersum, `mr-2 text text_type_main - large`)}>{total}</p>
+                        <CurrencyIcon type="primary" />
+                    </div>
+                }
+                <Button
+                    htmlType='submit'
+                    type="primary"
+                    size="large"
+                    disabled={!isActive}
+                >
+                    Оформить заказ
+                </Button>
+            </div>
+            {!user &&
+                <p className={classNames(styles.burgerConstructor__text, `text text_type_main-default text_color_inactive`)}>Для того чтобы оформить заказ нужно&nbsp;
+                    <Link
+                        className={classNames(styles.burgerConstructor__link , `text text_type_main-default`)}
+                        to={{
+                            pathname: `/login`,
+                        }}>
+                        войти
+                    </Link>
+                </p>
+            }
 
-        <div className={`${styles.constructor_info} pt-10 pr-4`}>
-          <div className={`${styles.summary} pr-10`}>
-            <p className="text text_type_digits-medium">{countIngredients}</p>
-            <CurrencyIcon type={'primary'} />
-          </div>
-          <button className={`${styles.constructor_btn} text text_type_main-small`} onClick={handleOrder}>Оформить заказ</button>
-        </div>
-      </div>
-    </div>
-  )
+            {!burgerConstructor.bun &&
+                <p className={classNames(styles.burgerConstructor__text, `mt-5 text text_type_main-default text_color_inactive`)}>Для оформления заказа необходимо добавить булочку
+                </p>
+            }
+
+        </form >
+    )
 }
 
 export default BurgerConstructor;

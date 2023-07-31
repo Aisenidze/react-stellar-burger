@@ -1,42 +1,24 @@
-.main {
-  max-width: 1280px;
+.ingredients {
+  max-width: 600px;
 }
 
-.menu_ingredients{
+.ingredients__switcher {
   display: flex;
 }
 
-.buns {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-}
-
-.button_ingredient{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #F2F2F3;
-  background: #131316;
-  width: 200px;
-  height: 56px;
-  border: none;
-  outline: none;
-}
-
-.scrollbar {
-  overflow: hidden;
+.ingredients__content {
+  height: 68vh;
   overflow-y: scroll;
-  height: 62vh;
-  flex-grow: 1;
 }
 
-::-webkit-scrollbar {
+.ingredients__content::-webkit-scrollbar {
   width: 8px;
-  background-color: #2F2F37;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #8585AD;
-  scroll-behavior: smooth;
-  border: 3px solid #8585AD;
+.ingredients__content::-webkit-scrollbar-track {
+  background: #2F2F37;
+}
+
+.ingredients__content::-webkit-scrollbar-thumb {
+  background-color: #8585AD;
 }

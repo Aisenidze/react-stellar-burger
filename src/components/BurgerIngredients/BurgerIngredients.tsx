@@ -1,81 +1,107 @@
-import { useInView } from 'react-intersection-observer';
-import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
-import BurgerIngredient from "./elements/BurgerIngredient/BurgerIngredient";
-import styles from './BurgerIngredients.module.css';
-import { useAppSelector } from "../../hooks/typeHook";
 import { FC } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useInView } from 'react-intersection-observer';
+import classNames from 'classnames';
+import { Tab } from '@ya.praktikum/react-developer-burger-ui-components'
+
+import BurgerIngredientGroup from './elements/BurgerIngredientGroup/BurgerIngredientGroup';
+import { toggleIngredientsTab } from '../../services/reducers/dataReducer';
+import { useAppDispatch, useAppSelector,  } from '../../services/types';
+import styles from './BurgerIngredients.module.css';
 
 const BurgerIngredients: FC = () => {
-  const { buns } = useAppSelector(state => state.buns);
-  const bun = buns?.data.filter((item) => item.type === "bun");
-  const sauces = buns?.data.filter((item) => item.type === "sauce");
-  const mains = buns?.data.filter((item) => item.type === "main");
-
-  const { ref: refBuns, inView: bunsIsView, entry: bunsEntry } = useInView({
+  const dispatch = useAppDispatch();
+  const store = useAppSelector(store => store);
+  const { ingredients, ingredientsCurrentTab } = store.data;
+  
+  const handleTabClick = (tab: string) => {
+    dispatch(toggleIngredientsTab(tab))
+    const element = document.getElementById(tab);
+    if (element) element.scrollIntoView({ behavior: "smooth" });
+  };
+  
+  const [bunsRef, inViewBuns] = useInView({
     threshold: 0,
   });
-  const { ref: refSauces, inView: saucesIsView, entry: bunsSauces } = useInView({
+  
+  const [mainsRef, inViewFilling] = useInView({
     threshold: 0,
   });
-  const { ref: refMains, inView: mainsIsView, entry: mainsEntry } = useInView({
+  
+  const [saucesRef, inViewSauces] = useInView({
     threshold: 0,
   });
-
-  function scrollingTo(value: any) {
-    value?.target.scrollIntoView({behavior:"smooth"});
-  }
+  
+  useEffect(() => {
+    if (inViewBuns) {
+      dispatch(toggleIngredientsTab('bun'))
+    } else if (inViewSauces) {
+      dispatch(toggleIngredientsTab('sauce'))
+    } else if (inViewFilling) {
+      dispatch(toggleIngredientsTab('main'))
+    }
+  }, [ingredientsCurrentTab, inViewBuns, inViewFilling, inViewSauces, dispatch]);
+  
+  const dataBun = useMemo(() => {
+    return ingredients?.filter(item => item.type === 'bun');
+  }, [ingredients])
+  
+  const dataMain = useMemo(() => {
+    return ingredients?.filter(item => item.type === 'main');
+  }, [ingredients])
+  
+  const dataSauce = useMemo(() => {
+    return ingredients?.filter(item => item.type === 'sauce')
+  }, [ingredients])
   
   return (
-    <div className={styles.main}>
-      <h1>Соберите бургер</h1>
-      <nav className={styles.menu_ingredients}>
-        <Tab value="buns" active={bunsIsView} onClick={() => {
-          scrollingTo(bunsEntry);
-        }}>
-          Булки
-        </Tab>
-        <Tab value="sauces" active={saucesIsView && !bunsIsView} onClick={() => {
-          scrollingTo(bunsSauces);
-        }}>
-          Соусы
-        </Tab>
-        <Tab value="mains" active={mainsIsView && !bunsIsView && !saucesIsView} onClick={() => {
-          scrollingTo(mainsEntry);
-        }}>
-          Начинки
-        </Tab>
-      </nav>
-
-      <div className={styles.scrollbar}>
-        <div ref={refBuns}>
-          <h2>Булки</h2>
-          <div className={`${styles.buns} startDrag isDragging`}>
-            {bun?.map((bun) => (
-              <BurgerIngredient ingredient={bun} key={bun._id}/>
-            ))}
-          </div>
-        </div>
-
-        <div ref={refSauces}>
-          <h2>Соусы</h2>
-          <div className={`${styles.buns} startDrag isDragging`}>
-            {sauces?.map((sauce) => (
-              <BurgerIngredient ingredient={sauce} key={sauce._id}/>
-            ))}
-          </div>
-        </div>
-
-        <div ref={refMains}>
-          <h2>Начинки</h2>
-          <div className={`${styles.buns} startDrag isDragging`}>
-            {mains?.map((main) => (
-              <BurgerIngredient ingredient={main} key={main._id}/>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+        <section className={styles.ingredients}>
+            <h1 className={`text text_type_main-large mt-10 mb-5`}>Соберите бургер</h1>
+            <div className={classNames(styles[`ingredients__switcher`], `mb-10`)}>
+                <Tab
+                    value="bun"
+                    active={ingredientsCurrentTab === 'bun'}
+                    onClick={() => { handleTabClick('bun') }}
+                >
+                    Булки
+                </Tab>
+                <Tab
+                    value="sauce"
+                    active={ingredientsCurrentTab === 'sauce'}
+                    onClick={() => { handleTabClick('sauce') }}
+                >
+                    Соусы
+                </Tab>
+                <Tab
+                    value="main"
+                    active={ingredientsCurrentTab === 'main'}
+                    onClick={() => { handleTabClick('main') }}
+                >
+                    Начинки
+                </Tab>
+            </div>
+            <div className={styles[`ingredients__content`]}>
+                <BurgerIngredientGroup
+                    ref={bunsRef}
+                    data={dataBun}
+                    titleId='bun'
+                    title={'Булки'}
+                />
+                <BurgerIngredientGroup
+                    ref={saucesRef}
+                    data={dataSauce}
+                    titleId='sauce'
+                    title={'Соусы'}
+                />
+                <BurgerIngredientGroup
+                    ref={mainsRef}
+                    data={dataMain}
+                    titleId='main'
+                    title={'Начинки'}
+                />
+            </div>
+        </section>
+    )
 }
 
 export default BurgerIngredients;

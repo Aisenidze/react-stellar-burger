@@ -1,40 +1,54 @@
-.main {
-    opacity: 1;
-}
-
-.wrapper {
+.ingredient {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    position: relative;
 }
 
-.heading {
+.ingredient__header {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 0;
-    min-height: 64px;
-}
-
-.name {
-    margin: 0;
-}
-
-.info {
-    list-style-type: none;
-
-    display: flex;
+    width: 640px;
     justify-content: space-between;
-
-    padding: 0;
+    align-items: center;
 }
 
-.items {
+.ingredient__title {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.ingredient__itemValue {
+    font-family: 'Iceland';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 28px;
+    line-height: 24px;
+}
+
+.ingredient__closeButton {
+    background-color: transparent;
+    border: none;
+    transition: all 0.3s;
+}
+
+.ingredient__closeButton:hover {
+    opacity: 0.6;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.ingredient__listItem {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    gap: 20px;
+}
+
+.ingredient__item {
+    display: flex;
     align-items: center;
-    word-spacing: -8px;
+    flex-direction: column;
+    gap: 8px;
+    color: #8585AD;
+    list-style: none;
+    width: 120px;
 }

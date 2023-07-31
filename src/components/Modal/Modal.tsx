@@ -1,53 +1,41 @@
-import { useEffect, useCallback, FC, ReactElement } from "react";
-import { createPortal } from "react-dom";
+import React, { FC, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import { ModalOverlay } from '../ModalOverlay/ModalOverlay';
+import { CloseIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './Modal.module.css';
-import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import { ModalOverlay } from "../ModalOverlay/ModalOverlay";
-import { closeModal } from "../../services/ModalSlice/ModalSlice";
-import { useAppDispatch, useAppSelector } from "../../hooks/typeHook";
 
-const modalRootElement = document.querySelector('#modal') as HTMLElement;
-
-interface ModalProps {
-  children?: ReactElement;
+interface IModalProps {
+  children: React.ReactNode,
+  onClose: () => void
 }
 
-const Modal: FC<ModalProps> = (props) => {
-  const { isOpen } = useAppSelector(state => state.modal);
-  const dispatch = useAppDispatch();
-  const closeByEsc = useCallback((e) => {
-    if (e.key === 'Escape') {
-      dispatch(closeModal())
-    }
-  }, [dispatch]);
-  
-  const handleClose = useCallback(() => {
-    dispatch(closeModal())
-  },[dispatch])
+const Modal: FC<IModalProps> = ({ children, onClose }) => {
+  const modalsContainer = document.querySelector('#modal') as HTMLElement;
 
   useEffect(() => {
-    document.addEventListener('keydown', closeByEsc);
-    return () => document.removeEventListener('keydown', closeByEsc)
-  }, [closeByEsc]);
+    document.addEventListener('keydown', handleEscKeydown);
+    return () => {
+      document.removeEventListener('keydown', handleEscKeydown);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
-  if(!isOpen) {
-    return null;
+  const handleEscKeydown = (e: { key: string }) => {
+    e.key === 'Escape' && onClose();
   }
 
-  return createPortal(
-    <>
-      <ModalOverlay />
-      <div className={styles.modal_card} >
-        <div className={styles.close_icon}>
-        <CloseIcon type="primary" onClick={handleClose}/>
-        </div>
-        {props.children}
-      </div>
-    </>,
-    modalRootElement,
-  );  
-};
-
-
+    return ReactDOM.createPortal(
+        <>
+            <div className={styles.modal}>
+                <div className={styles.modal__closeButton}>
+                    <CloseIcon type="primary" onClick={onClose} />
+                </div>
+                {children}
+            </div>
+            <ModalOverlay onClick={onClose} />
+        </>,
+        modalsContainer
+    )
+}
 
 export default Modal;
