@@ -38,17 +38,14 @@
 
 body::-webkit-scrollbar {
   width: 8px;
-  /* ширина scrollbar */
 }
 
 body::-webkit-scrollbar-track {
   background: #2F2F37;
-  /* цвет дорожки */
 }
 
 body::-webkit-scrollbar-thumb {
   background-color: #8585AD;
-  /* цвет плашки */
 }
 
 @keyframes App-logo-spin {

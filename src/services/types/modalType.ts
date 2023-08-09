@@ -1,8 +1,8 @@
 export type TModalState = {
-    ingredientDetails: {
-        isOpened: boolean,
-    },
-    orderDetails: {
-        isOpened: boolean,
-    },
+  ingredientDetails: {
+    isOpened: boolean;
+  };
+  orderDetails: {
+    isOpened: boolean;
+  };
 };

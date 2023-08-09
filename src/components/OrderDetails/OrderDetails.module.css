@@ -35,7 +35,8 @@
   gap: 16px;
 }
 
-.ingredientTotal, .orderTotal {
+.ingredientTotal,
+.orderTotal {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -79,15 +80,12 @@
 
 .orderIngredients::-webkit-scrollbar {
   width: 8px;
-  /* ширина scrollbar */
 }
 
 .orderIngredients::-webkit-scrollbar-track {
   background: #2F2F37;
-  /* цвет дорожки */
 }
 
 .orderIngredients::-webkit-scrollbar-thumb {
   background-color: #8585AD;
-  /* цвет плашки */
 }

@@ -22,90 +22,107 @@ import { Reset } from '../../pages/Reset/Reset';
 import { ResetConfirm } from '../../pages/ResetConfirm/RresetConfirm';
 
 const App: FC = () => {
-    const location = useLocation<IUseLocation>();
-    const dispatch = useAppDispatch();
-    const history = useHistory();
-    const state = useAppSelector(store => store)
-    const background = location.state?.background;
+  const location = useLocation<IUseLocation>();
+  const dispatch = useAppDispatch();
+  const history = useHistory();
+  const user = useAppSelector((store) => store.user);
+  const data = useAppSelector((store) => store.data);
+  const burgerConstructor = useAppSelector((store) => store.burgerConstructor);
+  const background = location.state?.background;
+  
+  useEffect(() => {
+    dispatch(getAllIngredients());
+  }, [dispatch]);
+  
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+  
+  const handleCloseModals = () => {
+    history.goBack()
+  }
+  
+  return (
+    <div className={`body`} >
+      <AppHeader />
+      <Switch location={background || location}>
+        <Route path='/' exact>
+          <Constructor />
+        </Route>
+        <ProtectedRoute path='/profile/orders/:id' children={<OrderDetails />} />
+        <ProtectedRoute path='/profile' children={<Profile />} />
+        <Route path='/login' exact>
+          {!user.userData.name
+            && user.isAuthChecked
+            && user.userRequest
+              ? <Loading />
+              : <Login />}
+        </Route>
+        <Route path='/register' exact>
+          {!user.userData.name
+            && user.isAuthChecked
+            && user.userRequest
+              ? <Loading />
+              : <Register />}
+        </Route>
+        <Route path='/forgot-password' exact>
+          {!user.userData.name
+            && user.isAuthChecked
+            && user.userRequest
+              ? <Loading />
+              : <Reset />}
+        </Route>
+        <Route path='/reset-password' exact>
+          {(!user.userData.name
+            && user.isAuthChecked
+            && user.userRequest)
+              ? <Loading />
+              : user.resetRequestConfirmed
+                ? <ResetConfirm />
+                : <Redirect to={{ pathname: '/forgot-password' }} />}
+        </Route>
+        <Route path='/ingredients/:id' >
+          {data.ingredients?.length && <IngredientDetails />}
+        </Route>
+        <Route path='/feed/:id' >
+          <OrderDetails />
+        </Route>
+        <Route path='/feed' >
+          <Feed />
+        </Route>
+        <Route path="*">
+          <NotFound />
+        </Route>
+      </Switch>
 
-    useEffect(() => {
-        dispatch(getAllIngredients());
-    }, [dispatch]);
-
-    useEffect(() => {
-        dispatch(checkAuth());
-    }, [dispatch]);
-
-    const handleCloseModals = () => {
-        history.goBack()
-    }
-
-    return (
-        <div className={`body`} >
-        <AppHeader />
-        <Switch location={background || location}>
-            <Route path='/' exact>
-                <Constructor />
-            </Route>
-            <ProtectedRoute path='/profile/orders/:id' children={<OrderDetails />} />
-            <ProtectedRoute path='/profile' children={<Profile />} />
-            <Route path='/login' exact>
-                {!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest ? <Loading /> : <Login />}
-            </Route>
-            <Route path='/register' exact>
-                {!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest ? <Loading /> : <Register />}
-            </Route>
-            <Route path='/forgot-password' exact>
-                {!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest ? <Loading /> : <Reset />}
-            </Route>
-            <Route path='/reset-password' exact>
-                {(!state.user.userData.name && state.user.isAuthChecked && state.user.userRequest) ? <Loading /> : state.user.resetRequestConfirmed ? <ResetConfirm /> : <Redirect to={{ pathname: '/forgot-password' }} />}
-            </Route>
-            <Route path='/ingredients/:id' >
-                {state.data.ingredients?.length && <IngredientDetails />}
-            </Route>
-            <Route path='/feed/:id' >
-                <OrderDetails />
-            </Route>
-            <Route path='/feed' >
-                <Feed />
-            </Route>
-            <Route path="*">
-                <NotFound />
-            </Route>
-        </Switch>
-
-        {background &&
-            (<>
-                <Route path='/ingredients/:id' >
-                    <Modal onClose={handleCloseModals} >
-                        {state.data.ingredients?.length && <IngredientDetails />}
-                    </Modal>
-                </Route >
-                <Route path='/feed/:id' >
-                    <Modal onClose={handleCloseModals} >
-                        <OrderDetails />
-                    </Modal>
-                </Route >
-                <ProtectedRoute path='/order'>
-                    {state.burgerConstructor.orderNumber &&
-                        (
-                            <Modal onClose={handleCloseModals} >
-                                <OrderBrief />
-                            </Modal>
-                        )
-                    }
-                </ProtectedRoute>
-                <ProtectedRoute path='/profile/orders/:id'>
-                    <Modal onClose={handleCloseModals} >
-                        <OrderDetails />
-                    </Modal>
-                </ProtectedRoute>
-            </>
-            )
-        }
-        </div >
-    );
+      {background && (
+        <>
+          <Route path='/ingredients/:id' >
+            <Modal onClose={handleCloseModals} >
+              {data.ingredients?.length && <IngredientDetails />}
+            </Modal>
+          </Route >
+          <Route path='/feed/:id' >
+            <Modal onClose={handleCloseModals} >
+              <OrderDetails />
+            </Modal>
+          </Route >
+          <ProtectedRoute path='/order'>
+            {burgerConstructor.orderNumber &&  (
+              <Modal onClose={handleCloseModals} >
+                <OrderBrief />
+              </Modal>)
+            }
+          </ProtectedRoute>
+          <ProtectedRoute path='/profile/orders/:id'>
+            <Modal onClose={handleCloseModals} >
+              <OrderDetails />
+            </Modal>
+          </ProtectedRoute>
+        </>)
+      }
+    </div >
+  );
 }
 
 export default App;
