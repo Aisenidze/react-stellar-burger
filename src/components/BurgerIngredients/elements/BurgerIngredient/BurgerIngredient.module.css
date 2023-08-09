@@ -24,13 +24,10 @@
 }
 
 .card__count {
-  font-family: 'Iceland';
   font-weight: 400;
   font-size: 28px;
   line-height: 24px;
   color: #F2F2F3;
 }
 
-.asd {
-  color: red;
-}
+.card__image {}
