@@ -2,7 +2,7 @@
   "name": "react-burger-starter",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://aisenidze.github.io/react-stellar-burger/index.html",
+  "homepage": "https://aisenidze.github.io/react-stellar-burger/",
   "optimization": {
     "scripts": true,
     "styles": {
