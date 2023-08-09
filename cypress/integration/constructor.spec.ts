@@ -69,8 +69,8 @@ describe("service is available", () => {
   });
 
   it("should type email and password", () => {
-    cy.get("input").first().type("aisen.ivanov@mail.ru");
-    cy.get("input").last().type("testtest1");
+    cy.get("input").first().type("console.log");
+    cy.get("input").last().type("console.log");
   });
   it("should autorization and open order details", () => {
     cy.get("button").contains("Войти").click();
@@ -78,8 +78,8 @@ describe("service is available", () => {
       method: "POST",
       url: `${BASE_URL}/auth/login`,
       body: {
-        email: "aisen.ivanov@mail.ru",
-        password: "testtest1",
+        email: "console.log",
+        password: "console.log",
       },
     })
       .as("loginResponse")

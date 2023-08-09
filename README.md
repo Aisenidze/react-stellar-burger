@@ -2,7 +2,7 @@
 
 # React-based "Stellar burgers"
 
-## https://google.com
+## https://aisenidze.github.io/
 
 ## Tech
 * `React`

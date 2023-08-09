@@ -1,8 +1,3 @@
-@font-face {
-  font-family: 'Iceland', 'Jet Brains Mono', sans-serif;
-  src: url(../../fonts/fonts.css);
-}
-
 * p {
   margin: 0;
   padding: 0;
@@ -60,7 +55,6 @@ body::-webkit-scrollbar-thumb {
 .main {
   width: 100%;
   height: 100vh;
-  font-family: 'Jet Brains Mono',sans-serif;
   display: flex;
   justify-content: center;
 }
