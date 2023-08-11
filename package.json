@@ -2,7 +2,7 @@
   "name": "react-burger-starter",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "./",
   "optimization": {
     "scripts": true,
     "styles": {
