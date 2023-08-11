@@ -1,5 +1,3 @@
-# Каноническая работа проекта Stellar Burger 
-
 # React-based "Stellar burgers"
 
 ## https://aisenidze.github.io/react-stellar-burger/
@@ -15,6 +13,9 @@
 * `WebSocket`
 * `Unit - Jest`
 * `e2e - Cypress`
+
+## Overview
+This React Burger application provides a user-friendly interface for ordering delicious burgers online. With its intuitive design and seamless navigation, you can easily browse through a variety of burger options and place your orders hassle-free.
 
 ## Install
 
