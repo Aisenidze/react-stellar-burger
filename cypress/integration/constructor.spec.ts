@@ -1,6 +1,7 @@
 /* eslint-disable testing-library/await-async-utils */
 /* eslint-disable import/first */
 export {};
+import { BurgerConstructor_form, BurgerIngredient_card, Ingredient_ingredient } from "../../src/utils/test-constants";
 import { BASE_URL } from "../../src/utils/utils";
 
 describe("service is available", () => {
@@ -16,7 +17,7 @@ describe("service is available", () => {
 
   it("should open ingredient details", () => {
     cy.visit("/");
-    cy.get("[class^=BurgerIngredient_card]").first().click();
+    cy.get(BurgerIngredient_card).first().click();
   });
 
   it("should close ingredient details by button", () => {
@@ -29,18 +30,18 @@ describe("service is available", () => {
   });
 
   it("should dragndrop bun", () => {
-    cy.get("[class^=BurgerIngredient_card__IRqlw]")
+    cy.get(BurgerIngredient_card)
       .first()
-      .drag("[class^=BurgerConstructor_form]");
-    cy.get("[class^=BurgerIngredient_card__IRqlw]")
+      .drag(BurgerConstructor_form);
+    cy.get(BurgerIngredient_card)
       .eq(2)
-      .drag("[class^=BurgerConstructor_form]");
+      .drag(BurgerConstructor_form);
   });
 
   it("should dragndrop bun third element", () => {
-    cy.get("[class^=BurgerIngredient_card__IRqlw]")
+    cy.get(BurgerIngredient_card)
       .eq(4)
-      .drag("[class^=BurgerConstructor_form]");
+      .drag(BurgerConstructor_form);
   });
 
   it("should delete constructor-element", () => {
@@ -50,17 +51,17 @@ describe("service is available", () => {
       .and("not.exist");
   });
   it("should dragndrop bun third element", () => {
-    cy.get("[class^=BurgerIngredient_card__IRqlw]")
+    cy.get(BurgerIngredient_card)
       .eq(3)
-      .drag("[class^=BurgerConstructor_form]");
+      .drag(BurgerConstructor_form);
   });
   it("should dragndrop constructor-element", () => {
-    cy.get("[class^=Ingredient_ingredient__0dokv]")
+    cy.get(Ingredient_ingredient)
       .eq(0)
-      .drag("[class^=Ingredient_ingredient__0dokv]");
-    cy.get("[class^=Ingredient_ingredient__0dokv]")
+      .drag(Ingredient_ingredient);
+    cy.get(Ingredient_ingredient)
       .eq(1)
-      .drag("[class^=Ingredient_ingredient__0dokv]");
+      .drag(Ingredient_ingredient);
   });
   it("should open auth", () => {
     cy.get("[class^=BurgerConstructor_burgerConstructor__link]")
@@ -69,8 +70,8 @@ describe("service is available", () => {
   });
 
   it("should type email and password", () => {
-    cy.get("input").first().type("console.log");
-    cy.get("input").last().type("console.log");
+    cy.get("input").first().type("aisen.ivanov@mail.ru");
+    cy.get("input").last().type("testtest1");
   });
   it("should autorization and open order details", () => {
     cy.get("button").contains("Войти").click();
@@ -78,8 +79,8 @@ describe("service is available", () => {
       method: "POST",
       url: `${BASE_URL}/auth/login`,
       body: {
-        email: "console.log",
-        password: "console.log",
+        email: "aisen.ivanov@mail.ru",
+        password: "testtest1",
       },
     })
       .as("loginResponse")

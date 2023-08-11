@@ -152,3 +152,7 @@ export const payload = {
     token,
   },
 };
+
+export const BurgerIngredient_card = "[class^=BurgerIngredientGroup_card__link]";
+export const BurgerConstructor_form = "[class^=BurgerConstructor_form]";
+export const Ingredient_ingredient = "[class^=Ingredient_ingredient]";

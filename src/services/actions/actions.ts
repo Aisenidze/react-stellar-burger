@@ -28,6 +28,7 @@ import {
   setAuthChecked,
 } from "../reducers/userReducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { checkResponse } from "../../utils/api";
 
 export interface IIngredients {
   success: boolean;
@@ -40,14 +41,7 @@ export const getAllIngredients = createAsyncThunk<
   { rejectValue: TError }
 >("data/getAllIngredients", async function (_, { rejectWithValue }) {
   const response = await fetch(`${BASE_URL}/ingredients`);
-  if (!response.ok) {
-    return rejectWithValue({
-      status: response.status,
-      message: "Server Error, take a look on method getAllIngredients",
-    });
-  }
-  const data: IIngredients = await response.json();
-  return data;
+  return checkResponse(response);
 });
 
 export const checkAuth = createAsyncThunk(
